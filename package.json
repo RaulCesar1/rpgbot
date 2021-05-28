@@ -1,0 +1,16 @@
+{
+  "name": "rpg-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "keywords": [],
+  "author": "Raul César de Oliveira <raulcesardeoliveira2@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "quick.db": "^7.1.3"
+  }
+}
