@@ -11,6 +11,7 @@ exports.run = async(client, message, args) => {
     const nivel = db.fetch(`${message.author.id}.nivel`)
     const limite_itens = db.fetch(`${message.author.id}.limite_itens`)
     const inventario_itens = db.fetch(`${message.author.id}.inventario_itens`)
+    var limite_carteira = db.fetch(`${message.author.id}.limite_carteira`)
 
     const user = message.guild.member(message.mentions.users.first()) || message.guild.members.cache.get(args[0])
 
@@ -50,12 +51,14 @@ exports.run = async(client, message, args) => {
     }
 
     if(args[0] === "sacar") {
+        let coins_sacados = parseInt(args[1], 10)
+
         if(!args[1]) return message.reply(`use: \`${prefix}banco sacar "quantidade de coins"\` sem as aspas!`)
         if(isNaN(args[1])) return message.reply(`o valor inserido precisa ser um número!`)
         if(args[1] <= 0) return message.reply(`o valor inserido precisa ser no mínimo **1**!`)
         if(args[1] > banco_coins) return message.reply(`você não tem coins suficiente para sacar!`)
-
-        let coins_sacados = parseInt(args[1], 10)
+        let saqueVerificar = coins_sacados + coins
+        if(saqueVerificar > limite_carteira) return message.reply(`esta operação não pode ser realizada! Motivo: **o valor retirado ultrapassaria o limite da carteira.**`)
 
         coins += coins_sacados
         banco_coins -= coins_sacados
