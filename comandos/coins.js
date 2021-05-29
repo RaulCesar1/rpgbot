@@ -19,12 +19,7 @@ exports.run = async(client, message, args) => {
         let embed = new MessageEmbed()
         .setColor("ORANGE")
         .setAuthor(`Sua carteira`, message.author.avatarURL())
-        .setDescription(coins===1?`Você tem \`${coins} coin\` na sua carteira.`:`Você tem \`${coins} coins\` na sua carteira.`)
-
-        let embed1 = new MessageEmbed()
-        .setColor("ORANGE")
-        .setAuthor(`Sua carteira`, message.author.avatarURL())
-        .setDescription(`**Você não tem nenhum coin na sua carteira.**`)
+        .setDescription(coins===0?`**Você não tem nenhum coin na sua carteira.**`:coins===1?`**Você tem \`${coins} coin\` na sua carteira.**`:`**Você tem \`${coins} coins\` na sua carteira.**`)
 
         let embedTips = new MessageEmbed()
         .setColor("ORANGE")
@@ -34,7 +29,7 @@ exports.run = async(client, message, args) => {
         .addField('Para depositar coins na conta do banco utilize:',
         `\`${prefix}banco depositar "quantidade de coins"\` sem as aspas!`)
     
-        message.channel.send(message.author, coins===0?embed1:embed)
+        message.channel.send(message.author, embed)
             .then(msg => {
                 var qual = false;
                 msg.react('❗')
@@ -49,7 +44,7 @@ exports.run = async(client, message, args) => {
                         msg.edit(embedTips)
                     } else {
                         qual = false;
-                        msg.edit(coins===0?embed1:embed)
+                        msg.edit(embed)
                     }
                 })
             })
@@ -97,19 +92,14 @@ exports.run = async(client, message, args) => {
         }
 
         let userCoins = db.fetch(`${user.user.id}.coins`)
-        if(!userCoins || userCoins===null) {await db.set(`${user.user.id}.coins`, 0)}
+        if(!userCoins || userCoins===null || userCoins === undefined || userCoins === 0) {await db.set(`${user.user.id}.coins`, 0)}
 
         let embed = new MessageEmbed()
         .setColor("ORANGE")
         .setAuthor(`Carteira de ${user.user.username}`, user.user.avatarURL())
-        .setDescription(userCoins===1?`Ele tem \`${userCoins} coin\` na carteira.`:`Ele tem \`${userCoins} coins\` na carteira.`)
-
-        let embed1 = new MessageEmbed()
-        .setColor("ORANGE")
-        .setAuthor(`Carteira de ${user.user.username}`, user.user.avatarURL())
-        .setDescription(`**Ele não tem nenhum coin na carteira.**`)
+        .setDescription(userCoins===0?`**Ele não tem nenhum coin na carteira.**`:userCoins===1?`**Ele tem \`${userCoins} coin\` na carteira.**`:`**Ele tem \`${userCoins} coins\` na carteira.**`)
     
-        message.channel.send(message.author, userCoins===0?embed1:embed)
+        message.channel.send(message.author, embed)
         return
     }
 

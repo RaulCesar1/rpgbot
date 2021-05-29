@@ -19,12 +19,7 @@ exports.run = async(client, message, args) => {
         let embed = new MessageEmbed()
         .setColor("GREEN")
         .setAuthor(`Sua conta do banco`, message.author.avatarURL())
-        .setDescription(banco_coins===1?`Você tem \`${banco_coins} coin\` na sua conta do banco.`:`Você tem \`${banco_coins} coins\` na sua conta do banco.`)
-
-        let embed1 = new MessageEmbed()
-        .setColor("GREEN")
-        .setAuthor(`Sua conta do banco`, message.author.avatarURL())
-        .setDescription(`**Você não tem nenhum coin na sua conta do banco.**`)
+        .setDescription(banco_coins===0?`**Você não tem nenhum coin na sua conta do banco.**`:banco_coins===1?`**Você tem \`${banco_coins} coin\` na sua conta do banco.**`:`**Você tem \`${banco_coins} coins\` na sua conta do banco.**`)
 
         let embedTips = new MessageEmbed()
         .setColor("GREEN")
@@ -33,7 +28,7 @@ exports.run = async(client, message, args) => {
         .addField('Para depositar coins utilize:',
         `\`${prefix}banco depositar "quantidade de coins"\` sem as aspas!`)
 
-        message.channel.send(message.author, banco_coins===0?embed1:embed)
+        message.channel.send(message.author, embed)
             .then(msg => {
                 var qual = false;
                 msg.react('❗')
@@ -48,7 +43,7 @@ exports.run = async(client, message, args) => {
                         msg.edit(embedTips)
                     } else {
                         qual = false;
-                        msg.edit(banco_coins===0?embed1:embed)
+                        msg.edit(embed)
                     }
                 })
             })
@@ -60,6 +55,8 @@ exports.run = async(client, message, args) => {
         if(!args[1]) return message.reply(`use: \`${prefix}banco depositar "quantidade de coins"\` sem as aspas!`)
         if(args[1] === "max" || args[1] === "maximo" || args[1] === "all") {
             let maxDeposito = coins
+
+            if(maxDeposito === 0) return message.reply(`esta operação não pode ser realizada! Motivo: **você não tem nenhum coin para depositar!**`)
 
             coins -= maxDeposito
             banco_coins += maxDeposito
@@ -91,6 +88,8 @@ exports.run = async(client, message, args) => {
             let saqueMaximo = limite_carteira - coins
             var saqueTotalMaximo;
             saqueMaximo>banco_coins?saqueTotalMaximo=banco_coins:saqueMaximo<banco_coins?saqueTotalMaximo=saqueMaximo:saqueTotalMaximo=saqueMaximo
+
+            if(saqueTotalMaximo === 0) return message.reply(`esta operação não pode ser realizada! Motivo: **você não tem nenhum coin para sacar!**`)
 
             coins += saqueTotalMaximo
             banco_coins -= saqueTotalMaximo

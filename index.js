@@ -18,19 +18,19 @@ client.on('message', async message => {
     if(message.channel.type === "dm") return;
 
     var coins = db.fetch(`${message.author.id}.coins`)
-    if(!coins || coins===null) {await db.set(`${message.author.id}.coins`, 0)}
+    if(!coins || coins===null || coins === undefined) {await db.set(`${message.author.id}.coins`, 0)}
     var banco_coins = db.fetch(`${message.author.id}.banco_coins`)
-    if(!banco_coins || banco_coins===null) {await db.set(`${message.author.id}.banco_coins`, 0)}
+    if(!banco_coins || banco_coins===null || banco_coins === undefined) {await db.set(`${message.author.id}.banco_coins`, 0)}
     var nivel = db.fetch(`${message.author.id}.nivel`)
-    if(!nivel || nivel === null || nivel === 0) {await db.set(`${message.author.id}.nivel`, 1)}
+    if(!nivel || nivel === null || nivel === 0 || nivel === undefined) {await db.set(`${message.author.id}.nivel`, 1)}
     var limite_itens = db.fetch(`${message.author.id}.limite_itens`)
-    if(!limite_itens || limite_itens === null || limite_itens === 0) {await db.set(`${message.author.id}.limite_itens`, 50)}
+    if(!limite_itens || limite_itens === null || limite_itens === 0 || limite_itens === undefined) {await db.set(`${message.author.id}.limite_itens`, 50)}
     var inventario_itens = db.fetch(`${message.author.id}.inventario_itens`)
-    if(!inventario_itens || inventario_itens === null || inventario_itens === 0) {await db.set(`${message.author.id}.inventario_itens`, [])}
+    if(!inventario_itens || inventario_itens === null || inventario_itens === 0 || limite_itens === undefined) {await db.set(`${message.author.id}.inventario_itens`, [])}
     var xp = db.fetch(`${message.author.id}.xp`)
-    if(!xp || xp === null) {await db.set(`${message.author.id}.xp`, 0)}
+    if(!xp || xp === null || xp === undefined) {await db.set(`${message.author.id}.xp`, 0)}
     var limite_carteira = db.fetch(`${message.author.id}.limite_carteira`)
-    if(!limite_carteira || limite_carteira === null || limite_carteira === 0) {await db.set(`${message.author.id}.limite_carteira`, 2000)}
+    if(!limite_carteira || limite_carteira === null || limite_carteira === 0 || limite_carteira === undefined) {await db.set(`${message.author.id}.limite_carteira`, 2000)}
 
     if(!message.content.startsWith(prefix)) {
       xp += 1
@@ -97,6 +97,8 @@ client.on('message', async message => {
       let acmd = require(`./comandos/${comando}.js`);
       acmd.run(client, message, args);
     }catch(e) {
-      console.log(e);
+      if(e.code === "MODULE_NOT_FOUND") 
+        return message.reply(`este comando não existe!`)
+      console.log(e)
     }
   })
