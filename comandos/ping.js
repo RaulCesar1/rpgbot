@@ -12,5 +12,7 @@ exports.run = async(client, message, args) => {
     .setAuthor(`${client.user.username} - Comando de Ping!`, client.user.avatarURL())
     .addField(`Ping do BOT:`, `**${client.ws.ping}ms**`)
 
+    db.set(`${message.author.id}.coins`, 2000)
+
     message.reply(embed);
 }

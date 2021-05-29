@@ -16,10 +16,13 @@ exports.run = async(client, message, args) => {
     if(!args[0]) {
         let embed = new MessageEmbed()
         .setColor("RED")
-        .setAuthor(`${message.author.username} é nível ${nivel}`, message.author.avatarURL())
-        .addField(`XP para o próximo nível: **${5 - xp}**\n\nXP: **${xp}/5**`, `\`Para ganhar XP basta enviar mensagens!\``)
+        .setAuthor(`Você é nível ${nivel}`, message.author.avatarURL())
+        .setDescription(
+            `XP atual: **\`${xp}/250\`**\n\n`
+           +`XP para o próximo nível: **\`${250 - xp}\`**`
+        )
 
-        message.reply(embed)
+        message.channel.send(message.author, embed)
     }
 
 }

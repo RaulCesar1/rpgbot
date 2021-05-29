@@ -18,28 +18,61 @@ exports.run = async(client, message, args) => {
     if(!args[0]) {
         let embed = new MessageEmbed()
         .setColor("GREEN")
-        .setAuthor(`${message.author.username} - Conta do Banco`, message.author.avatarURL())
-        .setDescription(`Você tem \`${banco_coins} coin(s)\` em sua conta do banco.`)
-        .addField('Para sacar esses coins utilize:',
-        `\`${prefix}banco sacar "quantidade de coins"\` sem as aspas!`)
-        .addField('Para guardar coins utilize:',
-        `\`${prefix}banco depositar "quantidade de coins"\` sem as aspas!`)
+        .setAuthor(`Sua conta do banco`, message.author.avatarURL())
+        .setDescription(banco_coins===1?`Você tem \`${banco_coins} coin\` na sua conta do banco.`:`Você tem \`${banco_coins} coins\` na sua conta do banco.`)
 
         let embed1 = new MessageEmbed()
         .setColor("GREEN")
         .setAuthor(`Sua conta do banco`, message.author.avatarURL())
-        .setDescription(`**Você não tem nenhum coin na sua conta do banco! :(**`)
+        .setDescription(`**Você não tem nenhum coin na sua conta do banco.**`)
+
+        let embedTips = new MessageEmbed()
+        .setColor("GREEN")
+        .addField('Para sacar coins utilize:',
+        `\`${prefix}banco sacar "quantidade de coins"\` sem as aspas!`)
+        .addField('Para depositar coins utilize:',
+        `\`${prefix}banco depositar "quantidade de coins"\` sem as aspas!`)
 
         message.channel.send(message.author, banco_coins===0?embed1:embed)
+            .then(msg => {
+                var qual = false;
+                msg.react('❗')
+
+                let f1 = (r, u) => r.emoji.name === "❗" && u.id === message.author.id;
+                let c1 = msg.createReactionCollector(f1, {max: 100})
+
+                c1.on('collect', m => {
+                    msg.reactions.resolve('❗').users.remove(message.author.id)
+                    if(qual === false) {
+                        qual = true;
+                        msg.edit(embedTips)
+                    } else {
+                        qual = false;
+                        msg.edit(banco_coins===0?embed1:embed)
+                    }
+                })
+            })
     }
 
     if(args[0] === "depositar") {
+        let coins_depositados = parseInt(args[1], 10)
+
         if(!args[1]) return message.reply(`use: \`${prefix}banco depositar "quantidade de coins"\` sem as aspas!`)
+        if(args[1] === "max" || args[1] === "maximo" || args[1] === "all") {
+            let maxDeposito = coins
+
+            coins -= maxDeposito
+            banco_coins += maxDeposito
+    
+            db.set(`${message.author.id}.coins`, coins)
+            db.set(`${message.author.id}.banco_coins`, banco_coins)
+    
+            message.reply(maxDeposito===1?`operação realizada com sucesso! **${maxDeposito} coin** foi depositado em sua conta no banco.`:`operação realizada com sucesso! **${maxDeposito} coins** foram depositados em sua conta no banco.`)
+            return
+        }
         if(isNaN(args[1])) return message.reply(`o valor inserido precisa ser um número!`)
         if(args[1] <= 0) return message.reply(`o valor inserido precisa ser no mínimo **1**!`)
         if(args[1] > coins) return message.reply(`você não tem coins suficiente em sua carteira para depositar!`)
-
-        let coins_depositados = parseInt(args[1], 10)
 
         coins -= coins_depositados
         banco_coins += coins_depositados
@@ -54,6 +87,20 @@ exports.run = async(client, message, args) => {
         let coins_sacados = parseInt(args[1], 10)
 
         if(!args[1]) return message.reply(`use: \`${prefix}banco sacar "quantidade de coins"\` sem as aspas!`)
+        if(args[1] === "max" || args[1] === "maximo" || args[1] === "all") {
+            let saqueMaximo = limite_carteira - coins
+            var saqueTotalMaximo;
+            saqueMaximo>banco_coins?saqueTotalMaximo=banco_coins:saqueMaximo<banco_coins?saqueTotalMaximo=saqueMaximo:saqueTotalMaximo=saqueMaximo
+
+            coins += saqueTotalMaximo
+            banco_coins -= saqueTotalMaximo
+
+            db.set(`${message.author.id}.coins`, coins)
+            db.set(`${message.author.id}.banco_coins`, banco_coins)
+
+            message.reply(saqueTotalMaximo===1?`operação realizada com sucesso! **${saqueTotalMaximo} coin** foi adicionado em sua carteira.`:`operação realizada com sucesso! **${saqueTotalMaximo} coins** foram adicionados em sua carteira.`)
+            return
+        }
         if(isNaN(args[1])) return message.reply(`o valor inserido precisa ser um número!`)
         if(args[1] <= 0) return message.reply(`o valor inserido precisa ser no mínimo **1**!`)
         if(args[1] > banco_coins) return message.reply(`você não tem coins suficiente para sacar!`)

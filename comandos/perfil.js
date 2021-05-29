@@ -17,8 +17,9 @@ exports.run = async(client, message, args) => {
         .setAuthor(`Perfil de: ${message.author.username}`)
         .setColor("RED")
         .setThumbnail(message.author.avatarURL())
-        .addField(`Nível:`, `**${nivel}**`, true)
-        .addField('ID:', `**${message.author.id}**`, true)
+        .addField(`Nível:`, `\`${nivel}\``, true)
+        .addField('ID:', `\`${message.author.id}\``, true)
+
 
         message.reply(embed)
     }

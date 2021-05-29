@@ -32,16 +32,9 @@ client.on('message', async message => {
     var limite_carteira = db.fetch(`${message.author.id}.limite_carteira`)
     if(!limite_carteira || limite_carteira === null || limite_carteira === 0) {await db.set(`${message.author.id}.limite_carteira`, 2000)}
 
-    if(message.content.startsWith('dindin')) {
-      db.set(`${message.author.id}.coins`, 1751)
-
-      message.reply(`vc tem 1751 coins agr`)
-      return
-    }
-
     if(!message.content.startsWith(prefix)) {
       xp += 1
-      if(xp >= 5) {
+      if(xp >= 250) {
         nivel += 1
         db.set(`${message.author.id}.xp`, 0)
         db.set(`${message.author.id}.nivel`, nivel)
@@ -55,9 +48,10 @@ client.on('message', async message => {
           db.set(`${message.author.id}.banco_coins`, banco_coins)
 
           let embed = new MessageEmbed()
-          .setDescription(`Você upou de nível! Nível atual: **${nivel}**`)
-          .addField('Recompensas:', `Limite de itens no inventário aumentado para **${limite_itens}**!\n250 coins foram adicionados na sua conta do banco!\n\nUse: \`${prefix}banco\``)
-          .setColor("RANDOM")
+          .setAuthor(`Você upou de nível!`)
+          .setDescription(`**\`${nivel - 1} --> ${nivel}\`**`)
+          .addField('Recompensas:', `Limite de itens no inventário aumentado para **\`${limite_itens}!\`**\n**\`250 coins\`** foram adicionados na sua conta do banco!`)
+          .setColor("#51f1ff")
           message.channel.send(message.author, embed)
         } else if(limite_carteira - coins < 250) {
           let diferenca = limite_carteira - coins
@@ -70,18 +64,20 @@ client.on('message', async message => {
           db.set(`${message.author.id}.banco_coins`, banco_coins)
 
           let embed = new MessageEmbed()
-          .setDescription(`Você upou de nível! Nível atual: **${nivel}**`)
-          .addField('Recompensas:', `Limite de itens no inventário aumentado para **${limite_itens}**!\n${paraBanco} coins foram adicionados na sua conta do banco!\n${diferenca} coins foram adicionados na sua carteira!\n\nUse: \`${prefix}coins\` ou \`${prefix}banco\``)
-          .setColor("RANDOM")
+          .setAuthor(`Você upou de nível!`)
+          .setDescription(`**\`${nivel - 1} --> ${nivel}\`**`)
+          .addField('Recompensas:', `Limite de itens no inventário aumentado para **\`${limite_itens}!\`**\n**\`${paraBanco} coins\`** foram adicionados na sua conta do banco!\n**\`${diferenca} coins\`** foram adicionados na sua carteira!`)
+          .setColor("#51f1ff")
           message.channel.send(message.author, embed)
         } else {
           coins += 250
           db.set(`${message.author.id}.coins`, coins)
 
           let embed = new MessageEmbed()
-          .setDescription(`Você upou de nível! Nível atual: **${nivel}**`)
-          .addField('Recompensas:', `Limite de itens no inventário aumentado para **${limite_itens}**!\n250 coins foram adicionados na sua carteira!\n\nUse: \`${prefix}coins\``)
-          .setColor("RANDOM")
+          .setAuthor(`Você upou de nível!`)
+          .setDescription(`**\`${nivel - 1} --> ${nivel}\`**`)
+          .addField('Recompensas:', `Limite de itens no inventário aumentado para **\`${limite_itens}!\`**\n**\`250 coins\`** foram adicionados na sua carteira!`)
+          .setColor("#51f1ff")
           message.channel.send(message.author, embed)
         }
 

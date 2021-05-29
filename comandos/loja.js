@@ -14,7 +14,6 @@ exports.run = async(client, message, args) => {
 
     function confirmar_compra(nome_item, preco_item) {
         let embed = new MessageEmbed()
-        .setTimestamp()
         .setColor("ORANGE")
         .setAuthor(`Confirmação de Compra - ${message.author.username}`, message.author.avatarURL())
         .addField(`Tem certeza que deseja comprar \`${nome_item}\` ?`, `Preço: **\`${preco_item} coins\`**`)
@@ -48,7 +47,6 @@ exports.run = async(client, message, args) => {
 
     function pagina_armas_1() {
         let embed = new MessageEmbed()
-        .setTimestamp()
         .setDescription(`:one: - Espada Goblin - 350 coins`)
         .setFooter("Clique em um dos emojis abaixo para selecionar o item.")
 
@@ -69,7 +67,6 @@ exports.run = async(client, message, args) => {
 
     function pagina_principal() {
         let embed = new MessageEmbed()
-        .setTimestamp()
         .setDescription(`:crossed_swords: - Armas\n\n:fire: - Magias\n\n:mechanical_arm: - Armaduras\n\n:arrow_double_up: - Upgrades`)
         .setFooter("Clique em um dos emojis abaixo para selecionar a categoria de itens.")
     
