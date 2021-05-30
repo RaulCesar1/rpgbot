@@ -12,9 +12,20 @@ exports.run = async(client, message, args) => {
     const limite_itens = db.fetch(`${message.author.id}.limite_itens`)
     const inventario_itens = db.fetch(`${message.author.id}.inventario_itens`)
 
+    var arma_equipada = db.fetch(`${message.author.id}.arma_equipada`)
+    var armadura_equipada = db.fetch(`${message.author.id}.armadura_equipada`)
+    var magias_equipadas = db.fetch(`${message.author.id}.magias_equipadas`)
+
     const user = message.guild.member(message.mentions.users.first()) || message.guild.members.cache.get(args[0])
 
     if(!args[0]) {
+        let embedPrincipal = new MessageEmbed()
+        .setColor("BLUE")
+        .setAuthor(`Seu inventário`, message.author.avatarURL())
+        .addField(`Arma Equipada:`, arma_equipada.length===0?'Você não equipou nenhuma arma ainda!':arma_equipada)
+        .addField(`Armadura Equipada:`, armadura_equipada.length===0?'Você não equipou nenhuma armadura ainda!':armadura_equipada)
+        .addField(`Magias Equipadas:`, magias_equipadas.length===0?'Você não equipou nenhuma magia ainda!':magias_equipadas)
+
         let embed = new MessageEmbed()
         .setColor("BLUE")
         .setAuthor(`Seu inventário`, message.author.avatarURL())
@@ -24,27 +35,39 @@ exports.run = async(client, message, args) => {
         .setColor("BLUE")
         .setDescription(`**Limite do inventário: \`${limite_itens} itens\`**`)
     
-        message.channel.send(message.author, embed)
+        message.channel.send(message.author, embedPrincipal)
             .then(msg => {
-                var qual = false;
-                msg.react('❗')
+                msg.react('✅'); msg.react('💼'); msg.react('❗');
 
                 let f1 = (r, u) => r.emoji.name === "❗" && u.id === message.author.id;
                 let c1 = msg.createReactionCollector(f1, {max: 100})
+                let f2 = (r, u) => r.emoji.name === "💼" && u.id === message.author.id;
+                let c2 = msg.createReactionCollector(f2, {max: 100})
+                let f3 = (r, u) => r.emoji.name === "✅" && u.id === message.author.id;
+                let c3 = msg.createReactionCollector(f3, {max: 100})
 
                 c1.on('collect', m => {
                     msg.reactions.resolve('❗').users.remove(message.author.id)
-                    if(qual === false) {
-                        qual = true;
-                        msg.edit(embedTips)
-                    } else {
-                        qual = false;
-                        msg.edit(embed)
-                    }
+                    msg.edit(embedTips)
+                })
+
+                c2.on('collect', m => {
+                    msg.reactions.resolve('💼').users.remove(message.author.id)
+                    msg.edit(embed)
+                })
+            
+                c3.on('collect', m => {
+                    msg.reactions.resolve('✅').users.remove(message.author.id)
+                    msg.edit(embedPrincipal)
                 })
             })
+
         return
-    }   
+    }
+    
+    if(args[0] === "equipar") {
+        
+    }
 
     if(user) {
         if(user.user.id === message.author.id) {

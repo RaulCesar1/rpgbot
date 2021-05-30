@@ -115,5 +115,27 @@ exports.run = async(client, message, args) => {
         message.reply(coins_sacados===1?`operação realizada com sucesso! **${args[1]} coin** foi adicionado em sua carteira.`:`operação realizada com sucesso! **${args[1]} coins** foram adicionados em sua carteira.`)
     }
 
+    if(user) {
+        if(user.user.id === message.author.id) {
+            message.delete();
+            message.reply(`para ver quantos coins você tem na sua conta do banco, use: \`${prefix}banco\``)   
+                .then(msg => {
+                    setTimeout(function(){
+                        msg.delete()
+                    }, 7500)
+                })
+            return
+        }
 
+        let banco_coins_user = db.fetch(`${user.user.id}.banco_coins`)
+        if(!banco_coins_user || banco_coins_user===null || banco_coins_user === undefined) {await db.set(`${user.user.id}.banco_coins`, 0)}
+
+        let embed = new MessageEmbed()
+        .setColor("GREEN")
+        .setAuthor(`Conta do banco de ${user.user.username}`, user.user.avatarURL())
+        .setDescription(banco_coins_user===0?`**Ele não tem nenhum coin na conta do banco.**`:banco_coins_user===1?`**Ele tem \`${banco_coins_user} coin\` na conta do banco.**`:`**Ele tem \`${banco_coins_user} coins\` na conta do banco.**`)
+    
+        message.channel.send(message.author, embed)
+        return
+    }
 }

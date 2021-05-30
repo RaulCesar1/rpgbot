@@ -52,16 +52,27 @@ exports.run = async(client, message, args) => {
     }
 
     if(args[0] === "enviar") {
+        let quantidadeCoins = parseInt(args[2], 10)
+
+        if(!args[1]) return message.reply(`use: \`${prefix}coins enviar "usuário" "quantidade de coins"\` sem as aspas!`)
+        if(user.user.id === message.author.id) {
+            message.delete();
+            message.reply(`você não pode enviar coins para você mesmo!`)   
+                .then(msg => {
+                    setTimeout(function(){
+                        msg.delete()
+                    }, 7500)
+                })
+            return
+        }
+
         let limite_carteira_user = db.fetch(`${user.user.id}.limite_carteira`)
         if(!limite_carteira_user || limite_carteira_user === null || limite_carteira_user === 0) {await db.set(`${user.user.id}.limite_carteira`, 2000)}
         var coins_user = db.fetch(`${user.user.id}.coins`)
         if(!coins_user || coins_user===null) {await db.set(`${user.user.id}.coins`, 0)}
 
-        let quantidadeCoins = parseInt(args[2], 10)
-
         let quantidadeCoinsVerificar = quantidadeCoins + coins_user
 
-        if(!args[1]) return message.reply(`use: \`${prefix}coins enviar "usuário" "quantidade de coins"\` sem as aspas!`)
         if(!args[2]) return message.reply(`use: \`${prefix}coins enviar "usuário" "quantidade de coins"\` sem as aspas!`)
         if(isNaN(args[2])) return message.reply(`a quantidade de coins precisa ser um número!`)
         if(args[2] <= 0) return message.reply(`a quantidade de coins precisa ser no mínimo **1!**`)
