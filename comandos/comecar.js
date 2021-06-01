@@ -21,6 +21,26 @@ exports.run = async(client, message, args) => {
     var armas = db.fetch(`${message.author.id}.armas`)
     var jornada = db.fetch(`${message.author.id}.jornada`)
 
-    if(!jornada || jornada === false) return message.reply(`para começar sua jornada, use: \`${prefix}comecar\``)
+    if(jornada === true) return message.reply(`você já começou sua jornada!`)
 
+    await db.set(`${message.author.id}.coins`, 2000)
+    await db.set(`${message.author.id}.banco_coins`, 0)
+    await db.set(`${message.author.id}.limite_carteira`, 2000)
+    await db.set(`${message.author.id}.nivel`, 1)
+    await db.set(`${message.author.id}.xp`, 0)
+    await db.set(`${message.author.id}.limite_itens`, 25)
+    await db.set(`${message.author.id}.inventario_itens`, [])
+    await db.set(`${message.author.id}.arma_equipada`, [])
+    await db.set(`${message.author.id}.armadura_equipada`, [])
+    await db.set(`${message.author.id}.magias_equipadas`, [])
+    await db.set(`${message.author.id}.magias`, [])
+    await db.set(`${message.author.id}.armaduras`, [])
+    await db.set(`${message.author.id}.armas`, [])
+
+    try {
+        await db.set(`${message.author.id}.jornada`, true)
+        await message.reply('você começou sua jornada. Boa sorte!')
+    }catch(e){
+        console.log(e)
+    }
 }
