@@ -5,6 +5,7 @@ const token = configFile.token;
 const botID = configFile.botID;
 const prefix = configFile.prefix;
 const db = require('quick.db')
+const msgsFile = require('./utils/configs/messages.json')
 
 client.login(token)
 
@@ -13,7 +14,6 @@ client.on('ready', () => {
 })
 
 client.on('message', async message => {
-
     if(message.author.bot) return;
     if(message.channel.type === "dm") return;
 
@@ -31,12 +31,11 @@ client.on('message', async message => {
     var armaduras = db.fetch(`${message.author.id}.armaduras`)
     var armas = db.fetch(`${message.author.id}.armas`)
     var jornada = db.fetch(`${message.author.id}.jornada`)
+    var manutencao = db.fetch('manutencao')
 
     if(!message.content.startsWith(prefix)) {
       if(jornada === true) {
-
         xp += 1
-
         if(xp >= 250) {
           nivel += 1
           db.set(`${message.author.id}.xp`, 0)
@@ -85,10 +84,9 @@ client.on('message', async message => {
           }
           return
         }
-
         db.set(`${message.author.id}.xp`, xp)
-        return
       }
+      return
     }
   
     var comando = message.content.toLowerCase().split(' ')[0];

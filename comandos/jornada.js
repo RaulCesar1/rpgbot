@@ -24,19 +24,43 @@ exports.run = async(client, message, args) => {
     var manutencao = db.fetch('manutencao')
 
     if(manutencao === true) return message.reply(msgsFile["bot_manutencao"])
-    if(!jornada || jornada === false) return message.reply(msgsFile["jornada_comece"])
 
-    function confirmar_compra(nome_item, preco_item, tipo_item) {
-        let embed = new MessageEmbed()
-        .setColor("ORANGE")
-        .setAuthor(`Confirmação de Compra - ${message.author.username}`, message.author.avatarURL())
-        .addField(`Tem certeza que deseja comprar \`${nome_item}\` ?`, `Preço: **\`${preco_item} coins\`**`)
-        .setDescription(`:white_check_mark: - Confirmar Compra\n\n:x: - Cancelar Compra`)
+    if(!args[0]) return message.reply(`use: \`${prefix}jornada "comecar/reiniciar"\` sem as aspas!`)
 
-        message.channel.send(message.author, embed)
+    async function setar() {
+        await db.set(`${message.author.id}.coins`, 0)
+        await db.set(`${message.author.id}.banco_coins`, 0)
+        await db.set(`${message.author.id}.limite_carteira`, 2000)
+        await db.set(`${message.author.id}.nivel`, 1)
+        await db.set(`${message.author.id}.xp`, 0)
+        await db.set(`${message.author.id}.limite_itens`, 25)
+        await db.set(`${message.author.id}.inventario_itens`, [])
+        await db.set(`${message.author.id}.arma_equipada`, [])
+        await db.set(`${message.author.id}.armadura_equipada`, [])
+        await db.set(`${message.author.id}.magias_equipadas`, [])
+        await db.set(`${message.author.id}.magias`, [])
+        await db.set(`${message.author.id}.armaduras`, [])
+        await db.set(`${message.author.id}.armas`, [])
+    
+        try {
+            await db.set(`${message.author.id}.jornada`, true)
+            await message.reply('você começou sua jornada. Boa sorte!')
+        }catch(e){
+            console.log(e)
+        }
+    }
+
+    if(args[0] === "reiniciar") {
+        if(!jornada) return message.reply(`você ainda não começou sua jornada!`)
+
+        let embedConfirmacao = new MessageEmbed()
+        .setColor("RED")
+        .setAuthor(`Tem certeza que deseja reiniciar sua jornada?`, message.author.avatarURL())
+
+        message.channel.send(message.author, embedConfirmacao)
             .then(msg => {
                 msg.react('✅'); msg.react('❌')
-                
+
                 let f1 = (r, u) => r.emoji.name === "✅" && u.id === message.author.id;
                 let c1 = msg.createReactionCollector(f1, {max: 1})
                 let f2 = (r, u) => r.emoji.name === "❌" && u.id === message.author.id;
@@ -45,27 +69,20 @@ exports.run = async(client, message, args) => {
                 c1.on('collect', m => {
                     message.delete()
                     msg.delete()
-
-                    if(coins < preco_item) return message.reply(`você não tem coins suficiente para comprar este item!`)
-
-                    coins -= preco_item
-
-                    db.set(`${message.author.id}.coins`, coins)
-                    db.push(`${message.author.id}.${tipo_item}`, `${nome_item}`)
-                    db.push(`${message.author.id}.inventario_itens`, `${nome_item}`)
-
-                    message.reply(`compra efetuada com sucesso!`)
+                    setar()
                 })
 
                 c2.on('collect', m => {
-                    msg.delete()
                     message.delete()
-                    message.reply('operação cancelada!').then(mm => {
-                        setTimeout(function(){mm.delete()}, 2000)
-                    })
+                    msg.delete()
+                    message.reply('operação cancelada!')
+                        .then(mm => setTimeout(() => mm.delete(), 4000))
                 })
             })
     }
-    
-    confirmar_compra('Espada Goblin', 350, 'armas')
+
+    if(args[0] === "comecar") {
+        if(jornada === true) return message.reply(`você já começou sua jornada! Caso queira reiniciar, use: \`${prefix}jornada reiniciar\``)
+        setar()
+    }
 }

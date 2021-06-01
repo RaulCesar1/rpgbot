@@ -4,6 +4,7 @@ const token = configFile.token;
 const botID = configFile.botID;
 const prefix = configFile.prefix;
 const db = require('quick.db')
+const msgsFile = require('../utils/configs/messages.json')
 
 exports.run = async(client, message, args) => {
     var coins = db.fetch(`${message.author.id}.coins`)
@@ -20,8 +21,10 @@ exports.run = async(client, message, args) => {
     var armaduras = db.fetch(`${message.author.id}.armaduras`)
     var armas = db.fetch(`${message.author.id}.armas`)
     var jornada = db.fetch(`${message.author.id}.jornada`)
+    var manutencao = db.fetch('manutencao')
 
-    if(!jornada || jornada === false) return message.reply(`para começar sua jornada, use: \`${prefix}comecar\``)
+    if(manutencao === true) return message.reply(msgsFile["bot_manutencao"])
+    if(!jornada || jornada === false) return message.reply(msgsFile["jornada_comece"])
 
     const user = message.guild.member(message.mentions.users.first()) || message.guild.members.cache.get(args[0])
 
@@ -29,9 +32,9 @@ exports.run = async(client, message, args) => {
         let embedPrincipal = new MessageEmbed()
         .setColor("BLUE")
         .setAuthor(`Seu inventário - Itens equipados`, message.author.avatarURL())
-        .addField(`Arma Equipada:`, arma_equipada.length===0?'Você não equipou nenhuma arma ainda!':`\`${arma_equipada}\``)
-        .addField(`Armadura Equipada:`, armadura_equipada.length===0?'Você não equipou nenhuma armadura ainda!':`\`${arma_equipada}\``)
-        .addField(`Magias Equipadas:`, magias_equipadas.length===0?'Você não equipou nenhuma magia ainda!':`\`${arma_equipada}\``)
+        .addField(`Arma Equipada:`, arma_equipada.length===0?'Você não equipou nenhuma arma ainda!':arma_equipada)
+        .addField(`Armadura Equipada:`, armadura_equipada.length===0?'Você não equipou nenhuma armadura ainda!':armadura_equipada)
+        .addField(magias_equipadas.length===1?'Magia Equipada:':'Magias Equipadas:', magias_equipadas.length===0?'Você não equipou nenhuma magia ainda!':magias_equipadas)
 
         let embedInventario = new MessageEmbed()
         .setColor("BLUE")
@@ -119,26 +122,10 @@ exports.run = async(client, message, args) => {
     if(args[0] === "equipar") {
         let escolhas = ["arma", "armadura", "magia"]
         let escolhido = "";
-        armasGrande = [];
-        armadurasGrande = [];
-        magiasGrande = [];
-
-        for(i of armas) {
-            i=i.toUpperCase()
-            armasGrande.push(i)
-        }
-        for(i of armaduras) {
-            i=i.toUpperCase()
-            armadurasGrande.push(i)
-        }
-        for(i of magias) {
-            i=i.toUpperCase()
-            magiasGrande.push(i)
-        }
         
-        if(!args[1]) return message.reply(`use: \`${prefix}inventario equipar "arma/armadura/magia" "nome do item"\``)
-        if(escolhas.indexOf(args[1]) === -1) return message.reply(`use: \`${prefix}inventario equipar "arma/armadura/magia" "nome do item"\``)
-        if(!args[2]) return message.reply(`use: \`${prefix}inventario equipar ${args[1]} "nome do item"\``)
+        if(!args[1]) return message.reply(`use: \`${prefix}inventario equipar "arma/armadura/magia" "nome do item"\` sem as aspas!`)
+        if(escolhas.indexOf(args[1]) === -1) return message.reply(`use: \`${prefix}inventario equipar "arma/armadura/magia" "nome do item"\` sem as aspas!`)
+        if(!args[2]) return message.reply(`use: \`${prefix}inventario equipar ${args[1]} "nome do item"\` sem as aspas!`)
         args[1]==="arma"?escolhido="arma":args[1]==="armadura"?escolhido="armadura":escolhido="magia"
 
         argss = args
@@ -146,30 +133,33 @@ exports.run = async(client, message, args) => {
         let itemEscolhido = argss.join(" ")
 
         if(escolhido === "arma") {
-            if(armasGrande.indexOf(itemEscolhido.toUpperCase()) === -1) return message.reply('você não possui esta arma!')
+            if(armas.indexOf(itemEscolhido) === -1) return message.reply('você não possui esta arma! Verifique se digitou corretamente.')
+            if(itemEscolhido === arma_equipada) return message.reply(`você já está com esta arma equipada! Use: \`${prefix}inventario\``)
             try {
-                await db.set(`${message.author.id}.arma_equipada`, armas[armasGrande.indexOf(itemEscolhido.toUpperCase())])
-                message.reply(`a arma \`${armas[armasGrande.indexOf(itemEscolhido.toUpperCase())]}\` foi equipada com sucesso!`)
+                await db.set(`${message.author.id}.arma_equipada`, itemEscolhido)
+                message.reply(`a arma \`${itemEscolhido}\` foi equipada com sucesso!`)
             }catch(e){
                 console.log(e)
             }
         } else if(escolhido === "armadura") {
-            if(armadurasGrande.indexOf(itemEscolhido.toUpperCase()) === -1) return message.reply('você não possui esta armadura!')
+            if(armaduras.indexOf(itemEscolhido) === -1) return message.reply('você não possui esta armadura! Verifique se digitou corretamente.')
+            if(itemEscolhido === armadura_equipada) return message.reply(`você já está com esta armadura equipada! Use: \`${prefix}inventario\``)
             try {
-                await db.set(`${message.author.id}.armadura_equipada`, armaduras[armadurasGrande.indexOf(itemEscolhido.toUpperCase())])
-                message.reply(`a armadura \`${armaduras[armadurasGrande.indexOf(itemEscolhido.toUpperCase())]}\` foi equipada com sucesso!`)
+                await db.set(`${message.author.id}.armadura_equipada`, itemEscolhido)
+                message.reply(`a armadura \`${itemEscolhido}\` foi equipada com sucesso!`)
             }catch(e){
                 console.log(e)
             }
         } else {
-/*             if(magiasGrande.indexOf(itemEscolhido.toUpperCase()) === -1) return message.reply('você não possui esta magia!')
+            if(magias.indexOf(itemEscolhido) === -1) return message.reply('você não possui esta magia! Verifique se digitou corretamente.')
+            if(magias_equipadas.indexOf(itemEscolhido) >= 0) return message.reply(`você já está com esta magia equipada! Use: \`${prefix}inventario\``)
             try {
-                magias.length===3?magias.shift():''
-                await db.set(`${message.author.id}.magias_equipadas`, [...magias, magiasGrande.indexOf(itemEscolhido.toUpperCase())])
-                message.reply(`a magia \`${magias[magiasGrande.indexOf(itemEscolhido.toUpperCase())]}\` foi equipada com sucesso!`)
+                magias_equipadas.length===3?magias.shift():magias
+                await db.set(`${message.author.id}.magias_equipadas`, [...magias_equipadas, itemEscolhido])
+                message.reply(`a magia \`${itemEscolhido}\` foi equipada com sucesso!`)
             }catch(e){
                 console.log(e)
-            } */
+            }
         }
         return
     }

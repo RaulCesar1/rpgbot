@@ -4,6 +4,7 @@ const token = configFile.token;
 const botID = configFile.botID;
 const prefix = configFile.prefix;
 const db = require('quick.db')
+const msgsFile = require('../utils/configs/messages.json')
 
 exports.run = async(client, message, args) => {
     var coins = db.fetch(`${message.author.id}.coins`)
@@ -20,8 +21,10 @@ exports.run = async(client, message, args) => {
     var armaduras = db.fetch(`${message.author.id}.armaduras`)
     var armas = db.fetch(`${message.author.id}.armas`)
     var jornada = db.fetch(`${message.author.id}.jornada`)
+    var manutencao = db.fetch('manutencao')
 
-    if(!jornada || jornada === false) return message.reply(`para começar sua jornada, use: \`${prefix}comecar\``)
+    if(manutencao === true) return message.reply(msgsFile["bot_manutencao"])
+    if(!jornada || jornada === false) return message.reply(msgsFile["jornada_comece"])
 
     const user = message.guild.member(message.mentions.users.first()) || message.guild.members.cache.get(args[0])
 
@@ -64,6 +67,9 @@ exports.run = async(client, message, args) => {
     if(args[0] === "enviar") {
         let quantidadeCoins = parseInt(args[2], 10)
 
+        let jornada_user = db.fetch(`${user.user.id}.jornada`)
+        if(!jornada_user || jornada_user === false) return message.reply(`este usuário ainda não começou sua jornada!`)
+
         if(!args[1]) return message.reply(`use: \`${prefix}coins enviar "usuário" "quantidade de coins"\` sem as aspas!`)
         if(user.user.id === message.author.id) {
             message.delete();
@@ -77,9 +83,7 @@ exports.run = async(client, message, args) => {
         }
 
         let limite_carteira_user = db.fetch(`${user.user.id}.limite_carteira`)
-        if(!limite_carteira_user || limite_carteira_user === null || limite_carteira_user === 0) {await db.set(`${user.user.id}.limite_carteira`, 2000)}
         var coins_user = db.fetch(`${user.user.id}.coins`)
-        if(!coins_user || coins_user===null) {await db.set(`${user.user.id}.coins`, 0)}
 
         let quantidadeCoinsVerificar = quantidadeCoins + coins_user
 
@@ -101,6 +105,9 @@ exports.run = async(client, message, args) => {
     }
 
     if(user) {
+        let jornada_user = db.fetch(`${user.user.id}.jornada`)
+        if(!jornada_user || jornada_user === false) return message.reply(`este usuário ainda não começou sua jornada!`)
+
         if(user.user.id === message.author.id) {
             message.delete();
             message.reply(`para ver quantos coins você tem na sua carteira, use: \`${prefix}coins\``)   

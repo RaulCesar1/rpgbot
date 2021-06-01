@@ -4,6 +4,7 @@ const token = configFile.token;
 const botID = configFile.botID;
 const prefix = configFile.prefix;
 const db = require('quick.db')
+const msgsFile = require('../utils/configs/messages.json')
 
 exports.run = async(client, message, args) => {
     var coins = db.fetch(`${message.author.id}.coins`)
@@ -16,15 +17,13 @@ exports.run = async(client, message, args) => {
     var arma_equipada = db.fetch(`${message.author.id}.arma_equipada`)
     var armadura_equipada = db.fetch(`${message.author.id}.armadura_equipada`)
     var magias_equipadas = db.fetch(`${message.author.id}.magias_equipadas`)
-    var magias = db.fetch(`${message.author.id}_magias`)
-    var armaduras = db.fetch(`${message.author.id}_armaduras`)
-    var armas = db.fetch(`${message.author.id}_armas`)
+    var magias = db.fetch(`${message.author.id}.magias`)
+    var armaduras = db.fetch(`${message.author.id}.armaduras`)
+    var armas = db.fetch(`${message.author.id}.armas`)
+    var jornada = db.fetch(`${message.author.id}.jornada`)
+    var manutencao = db.fetch('manutencao')
 
-    const embed = new MessageEmbed()
-    .setTimestamp()
-    .setColor('YELLOW')
-    .setAuthor(`${client.user.username} - Comando de Ping!`, client.user.avatarURL())
-    .addField(`Ping do BOT:`, `**${client.ws.ping}ms**`)
+    if(manutencao === true) return message.reply(msgsFile["bot_manutencao"])
 
-    message.channel.send(message.author, embed)
+    message.reply(`**${client.ws.ping}ms**`)
 }

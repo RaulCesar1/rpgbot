@@ -20,7 +20,9 @@ exports.run = async(client, message, args) => {
     var armaduras = db.fetch(`${message.author.id}.armaduras`)
     var armas = db.fetch(`${message.author.id}.armas`)
     var jornada = db.fetch(`${message.author.id}.jornada`)
+    var manutencao = db.fetch('manutencao')
 
+    if(manutencao === true) return message.reply(`o bot está em manutenção no momento, tente mais tarde.`)
     if(!jornada || jornada === false) return message.reply(`para começar sua jornada, use: \`${prefix}comecar\``)
 
 }
