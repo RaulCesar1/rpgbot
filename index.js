@@ -5,7 +5,6 @@ const token = configFile.token;
 const botID = configFile.botID;
 const prefix = configFile.prefix;
 const db = require('quick.db')
-const msgsFile = require('./utils/configs/messages.json')
 
 client.login(token)
 
@@ -17,21 +16,44 @@ client.on('message', async message => {
     if(message.author.bot) return;
     if(message.channel.type === "dm") return;
 
-    var coins = db.fetch(`${message.author.id}.coins`)
-    var banco_coins = db.fetch(`${message.author.id}.banco_coins`)
-    var limite_carteira = db.fetch(`${message.author.id}.limite_carteira`)
-    var nivel = db.fetch(`${message.author.id}.nivel`)
-    var xp = db.fetch(`${message.author.id}.xp`)
-    var limite_itens = db.fetch(`${message.author.id}.limite_itens`)
-    var inventario_itens = db.fetch(`${message.author.id}.inventario_itens`)
-    var arma_equipada = db.fetch(`${message.author.id}.arma_equipada`)
-    var armadura_equipada = db.fetch(`${message.author.id}.armadura_equipada`)
-    var magias_equipadas = db.fetch(`${message.author.id}.magias_equipadas`)
-    var magias = db.fetch(`${message.author.id}.magias`)
-    var armaduras = db.fetch(`${message.author.id}.armaduras`)
-    var armas = db.fetch(`${message.author.id}.armas`)
-    var jornada = db.fetch(`${message.author.id}.jornada`)
-    var manutencao = db.fetch('manutencao')
+    var coins = await db.fetch(`${message.author.id}.coins`)
+    var banco_coins = await db.fetch(`${message.author.id}.banco_coins`)
+    var limite_carteira = await db.fetch(`${message.author.id}.limite_carteira`)
+    var nivel = await db.fetch(`${message.author.id}.nivel`)
+    var xp = await db.fetch(`${message.author.id}.xp`)
+    var limite_itens = await db.fetch(`${message.author.id}.limite_itens`)
+    var inventario_itens = await db.fetch(`${message.author.id}.inventario_itens`)
+    var arma_equipada = await db.fetch(`${message.author.id}.arma_equipada`)
+    var armadura_equipada = await db.fetch(`${message.author.id}.armadura_equipada`)
+    var magias_equipadas = await db.fetch(`${message.author.id}.magias_equipadas`)
+    var magias = await db.fetch(`${message.author.id}.magias`)
+    var armaduras = await db.fetch(`${message.author.id}.armaduras`)
+    var armas = await db.fetch(`${message.author.id}.armas`)
+    var jornada = await db.fetch(`${message.author.id}.jornada`)
+    var idm = await db.fetch(`${message.guild.id}.idm`)
+    var manutencao = await db.fetch('manutencao')
+    var frags = await db.fetch(`${message.author.id}.frags`)
+    if(!idm) {await db.set(`${message.guild.id}.idm`, 'en')}
+
+    module.exports = {
+      coins: coins,
+      banco_coins: banco_coins,
+      limite_carteira: limite_carteira,
+      nivel: nivel,
+      xp: xp,
+      limite_itens: limite_itens,
+      inventario_itens: inventario_itens,
+      arma_equipada: arma_equipada,
+      armadura_equipada: armadura_equipada,
+      magias_equipadas: magias_equipadas,
+      magias: magias,
+      armaduras: armaduras,
+      armas: armas,
+      jornada: jornada,
+      manutencao: manutencao,
+      idm: idm,
+      frags: frags
+    }
 
     if(!message.content.startsWith(prefix)) {
       if(jornada === true) {
@@ -93,6 +115,17 @@ client.on('message', async message => {
     comando = comando.slice(prefix.length);
   
     var args = message.content.split(' ').slice(1);
+
+    var carregarComando;
+
+    comando==="journey"?carregarComando="jornada":''
+    comando==="forge"?carregarComando="forja":''
+
+    if(carregarComando) {
+      let acmd = require(`./comandos/${carregarComando}.js`)
+      acmd.run(client, message, args);
+      return
+    }
   
     try {
       let acmd = require(`./comandos/${comando}.js`);

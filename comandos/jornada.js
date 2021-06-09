@@ -1,31 +1,19 @@
 const { Discord, Client, MessageEmbed } = require('discord.js')
-const configFile = require('../utils/configs/config.json');
-const token = configFile.token;
-const botID = configFile.botID;
-const prefix = configFile.prefix;
+const cf = require('../utils/configs/config.json')
+const dbv = require('../index.js')
 const db = require('quick.db')
-const msgsFile = require('../utils/configs/messages.json')
+
+var mf = require('../utils/configs/messages.json')
+mf = mf[dbv.idm]
+
+const token = cf.token
+const botID = cf.botID
+const prefix = cf.prefix
 
 exports.run = async(client, message, args) => {
-    var coins = db.fetch(`${message.author.id}.coins`)
-    var banco_coins = db.fetch(`${message.author.id}.banco_coins`)
-    var limite_carteira = db.fetch(`${message.author.id}.limite_carteira`)
-    var nivel = db.fetch(`${message.author.id}.nivel`)
-    var xp = db.fetch(`${message.author.id}.xp`)
-    var limite_itens = db.fetch(`${message.author.id}.limite_itens`)
-    var inventario_itens = db.fetch(`${message.author.id}.inventario_itens`)
-    var arma_equipada = db.fetch(`${message.author.id}.arma_equipada`)
-    var armadura_equipada = db.fetch(`${message.author.id}.armadura_equipada`)
-    var magias_equipadas = db.fetch(`${message.author.id}.magias_equipadas`)
-    var magias = db.fetch(`${message.author.id}.magias`)
-    var armaduras = db.fetch(`${message.author.id}.armaduras`)
-    var armas = db.fetch(`${message.author.id}.armas`)
-    var jornada = db.fetch(`${message.author.id}.jornada`)
-    var manutencao = db.fetch('manutencao')
+    if(dbv.manutencao === true) return message.reply(mf["geral"]["maintenance"])
 
-    if(manutencao === true) return message.reply(msgsFile["bot_manutencao"])
-
-    if(!args[0]) return message.reply(`use: \`${prefix}jornada "comecar/reiniciar"\` sem as aspas!`)
+    if(!args[0]) return message.reply(mf["commands"]["jornada"]["st/rs"].replace('PREFIX', prefix))
 
     async function setar() {
         await db.set(`${message.author.id}.coins`, 0)
@@ -41,21 +29,22 @@ exports.run = async(client, message, args) => {
         await db.set(`${message.author.id}.magias`, [])
         await db.set(`${message.author.id}.armaduras`, [])
         await db.set(`${message.author.id}.armas`, [])
-    
+        await db.set(`${message.author.id}.frags`, 0)
+
         try {
             await db.set(`${message.author.id}.jornada`, true)
-            await message.reply('você começou sua jornada. Boa sorte!')
+            await message.reply(mf["commands"]["jornada"]["GL"])
         }catch(e){
             console.log(e)
         }
     }
 
-    if(args[0] === "reiniciar") {
-        if(!jornada) return message.reply(`você ainda não começou sua jornada!`)
+    if(args[0] === "reiniciar" || args[0] === "restart") {
+        //if(dbv.nivel < 5) return message.reply(mf["commands"]["jornada"]["min_level"])
 
         let embedConfirmacao = new MessageEmbed()
         .setColor("RED")
-        .setAuthor(`Tem certeza que deseja reiniciar sua jornada?`, message.author.avatarURL())
+        .setAuthor(mf["commands"]["jornada"]["sure?"], message.author.avatarURL())
 
         message.channel.send(message.author, embedConfirmacao)
             .then(msg => {
@@ -75,14 +64,14 @@ exports.run = async(client, message, args) => {
                 c2.on('collect', m => {
                     message.delete()
                     msg.delete()
-                    message.reply('operação cancelada!')
+                    message.reply(mf["geral"]["op_cancel"])
                         .then(mm => setTimeout(() => mm.delete(), 4000))
                 })
             })
     }
 
-    if(args[0] === "comecar") {
-        if(jornada === true) return message.reply(`você já começou sua jornada! Caso queira reiniciar, use: \`${prefix}jornada reiniciar\``)
+    if(args[0] === "comecar" || args[0] === "start") {
+        if(jornada === true) return message.reply()
         setar()
     }
 }
