@@ -7,9 +7,9 @@ var mf = require(`../utils/idiomas/${dbv.idm}.json`)
 
 const token = cf.token
 const botID = cf.botID
-const prefix = cf.prefix
+var prefix = dbv.prefix
 
-exports.run = async(client, message, args) => {
+exports.run = async(client, message, args, comando) => {
     if(dbv.manutencao === true) return message.reply(mf["maintenance"])
-    if(!dbv.jornada || dbv.jornada === false) return message.reply(mf["to_start"])
+    if(!dbv.jornada || dbv.jornada === false) return message.reply(mf["to_start"].replace('PREFIX', prefix))
 }

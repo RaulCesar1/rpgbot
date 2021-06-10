@@ -3,7 +3,6 @@ const client = new Client();
 const configFile = require('./utils/configs/config.json');
 const token = configFile.token;
 const botID = configFile.botID;
-const prefix = configFile.prefix;
 const db = require('quick.db')
 
 client.login(token)
@@ -16,6 +15,7 @@ client.on('message', async message => {
     if(message.author.bot) return;
     if(message.channel.type === "dm") return;
 
+    var prefix = await db.fetch(`${message.guild.id}.prefix`)
     var coins = await db.fetch(`${message.author.id}.coins`)
     var banco_coins = await db.fetch(`${message.author.id}.banco_coins`)
     var limite_carteira = await db.fetch(`${message.author.id}.limite_carteira`)
@@ -34,6 +34,9 @@ client.on('message', async message => {
     var manutencao = await db.fetch('manutencao')
     var frags = await db.fetch(`${message.author.id}.frags`)
     if(!idm) {await db.set(`${message.guild.id}.idm`, 'en')}
+    if(!prefix) {await db.set(`${message.guild.id}.prefix`, '!')}
+
+    const mf = require(`./utils/idiomas/${idm}.json`)
 
     module.exports = {
       coins: coins,
@@ -52,8 +55,12 @@ client.on('message', async message => {
       jornada: jornada,
       manutencao: manutencao,
       idm: idm,
-      frags: frags
+      frags: frags,
+      prefix: prefix
     }
+    
+    if(message.content.startsWith(`<@${botID}>`) || message.content.startsWith(`<@!${botID}>`))
+      return message.reply(mf["bot_mention"].replace('{prefix}', prefix))
 
     if(!message.content.startsWith(prefix)) {
       if(jornada === true) {
@@ -120,16 +127,18 @@ client.on('message', async message => {
 
     comando==="journey"?carregarComando="jornada":''
     comando==="forge"?carregarComando="forja":''
+    comando==="prefixo"?carregarComando="prefix":''
+    comando==="bank"?carregarComando="banco":''
 
     if(carregarComando) {
       let acmd = require(`./comandos/${carregarComando}.js`)
-      acmd.run(client, message, args);
+      acmd.run(client, message, args, comando);
       return
     }
   
     try {
       let acmd = require(`./comandos/${comando}.js`);
-      acmd.run(client, message, args);
+      acmd.run(client, message, args, comando);
     }catch(e) {
       console.log(e)
     }

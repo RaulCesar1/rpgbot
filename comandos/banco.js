@@ -1,45 +1,32 @@
 const { Discord, Client, MessageEmbed } = require('discord.js')
-const configFile = require('../utils/configs/config.json');
-const token = configFile.token;
-const botID = configFile.botID;
-const prefix = configFile.prefix;
+const cf = require('../utils/configs/config.json')
+const dbv = require('../index.js')
 const db = require('quick.db')
-const msgsFile = require('../utils/configs/messages.json')
 
-exports.run = async(client, message, args) => {
-    var coins = db.fetch(`${message.author.id}.coins`)
-    var banco_coins = db.fetch(`${message.author.id}.banco_coins`)
-    var limite_carteira = db.fetch(`${message.author.id}.limite_carteira`)
-    var nivel = db.fetch(`${message.author.id}.nivel`)
-    var xp = db.fetch(`${message.author.id}.xp`)
-    var limite_itens = db.fetch(`${message.author.id}.limite_itens`)
-    var inventario_itens = db.fetch(`${message.author.id}.inventario_itens`)
-    var arma_equipada = db.fetch(`${message.author.id}.arma_equipada`)
-    var armadura_equipada = db.fetch(`${message.author.id}.armadura_equipada`)
-    var magias_equipadas = db.fetch(`${message.author.id}.magias_equipadas`)
-    var magias = db.fetch(`${message.author.id}.magias`)
-    var armaduras = db.fetch(`${message.author.id}.armaduras`)
-    var armas = db.fetch(`${message.author.id}.armas`)
-    var jornada = db.fetch(`${message.author.id}.jornada`)
-    var manutencao = db.fetch('manutencao')
+var mf = require(`../utils/idiomas/${dbv.idm}.json`)
 
-    if(manutencao === true) return message.reply(msgsFile["bot_manutencao"])
-    if(!jornada || jornada === false) return message.reply(msgsFile["jornada_comece"])
+const token = cf.token
+const botID = cf.botID
+var prefix = dbv.prefix
+
+exports.run = async(client, message, args, comando) => {
+    if(dbv.manutencao === true) return message.reply(mf["maintenance"])
+    if(!dbv.jornada || dbv.jornada === false) return message.reply(mf["to_start"].replace('PREFIX', prefix))
 
     const user = message.guild.member(message.mentions.users.first()) || message.guild.members.cache.get(args[0])
 
-    if(!args[0]) {
+    function no_args() {
         let embed = new MessageEmbed()
         .setColor("GREEN")
-        .setAuthor(`Sua conta do banco`, message.author.avatarURL())
-        .setDescription(banco_coins===0?`**Você não tem nenhum coin na sua conta do banco.**`:banco_coins===1?`**Você tem \`${banco_coins} coin\` na sua conta do banco.**`:`**Você tem \`${banco_coins} coins\` na sua conta do banco.**`)
+        .setAuthor(mf["banco_1"], message.author.avatarURL())
+        .setDescription(dbv.banco_coins===0?mf["banco_4"]:dbv.banco_coins===1?mf["banco_5"]:mf["banco_6"].replace('{banco_coins}', dbv.banco_coins))
 
         let embedTips = new MessageEmbed()
         .setColor("GREEN")
-        .addField('Para sacar coins utilize:',
-        `\`${prefix}banco sacar "quantidade de coins"\` sem as aspas!`)
-        .addField('Para depositar coins utilize:',
-        `\`${prefix}banco depositar "quantidade de coins"\` sem as aspas!`)
+        .addField(mf["banco_2"],
+        mf["banco_3"].replace('{prefix}', prefix))
+        .addField(mf["banco_23"],
+        mf["banco_24"].replace('{prefix}', prefix))
 
         message.channel.send(message.author, embed)
             .then(msg => {
@@ -62,91 +49,85 @@ exports.run = async(client, message, args) => {
             })
     }
 
-    if(args[0] === "depositar") {
+    if(!args[0]) return no_args()
+
+    if(args[0] === "depositar" || args[0] === "deposit") {
         let coins_depositados = parseInt(args[1], 10)
 
-        if(!args[1]) return message.reply(`use: \`${prefix}banco depositar "quantidade de coins"\` sem as aspas!`)
+        if(!args[1]) return message.reply(mf["banco_7"].replace('{prefix}', prefix).replace('args0', args[0]).replace('$cmd', comando))
         if(args[1] === "max" || args[1] === "maximo" || args[1] === "all") {
-            let maxDeposito = coins
+            let maxDeposito = dbv.coins
 
-            if(maxDeposito === 0) return message.reply(`esta operação não pode ser realizada! Motivo: **você não tem nenhum coin para depositar!**`)
+            if(maxDeposito === 0) return message.reply(mf["banco_8"])
 
-            coins -= maxDeposito
-            banco_coins += maxDeposito
+            dbv.coins -= maxDeposito
+            dbv.banco_coins += maxDeposito
     
-            db.set(`${message.author.id}.coins`, coins)
-            db.set(`${message.author.id}.banco_coins`, banco_coins)
+            db.set(`${message.author.id}.coins`, dbv.coins)
+            db.set(`${message.author.id}.banco_coins`, dbv.banco_coins)
     
-            message.reply(maxDeposito===1?`operação realizada com sucesso! **${maxDeposito} coin** foi depositado em sua conta no banco.`:`operação realizada com sucesso! **${maxDeposito} coins** foram depositados em sua conta no banco.`)
+            message.reply(maxDeposito===1?mf["banco_9"]:mf["banco_10"].replace('{banco_coins}', maxDeposito))
             return
         }
-        if(isNaN(args[1])) return message.reply(`o valor inserido precisa ser um número!`)
-        if(args[1] <= 0) return message.reply(`o valor inserido precisa ser no mínimo **1**!`)
-        if(args[1] > coins) return message.reply(`você não tem coins suficiente em sua carteira para depositar!`)
+        if(isNaN(args[1])) return message.reply(mf["banco_11"])
+        if(args[1] <= 0) return message.reply(mf["banco_12"])
+        if(args[1] > coins) return message.reply(mf["banco_13"])
 
-        coins -= coins_depositados
-        banco_coins += coins_depositados
+        dbv.coins -= coins_depositados
+        dbv.banco_coins += coins_depositados
 
-        db.set(`${message.author.id}.coins`, coins)
-        db.set(`${message.author.id}.banco_coins`, banco_coins)
+        db.set(`${message.author.id}.coins`, dbv.coins)
+        db.set(`${message.author.id}.banco_coins`, dbv.banco_coins)
 
-        message.reply(coins_depositados===1?`operação realizada com sucesso! **${args[1]} coin** foi depositado em sua conta no banco.`:`operação realizada com sucesso! **${args[1]} coins** foram depositados em sua conta no banco.`)
+        message.reply(coins_depositados===1?mf["banco_14"]:mf["banco_15"].replace('{banco_coins}', args[1]))
     }
 
-    if(args[0] === "sacar") {
+    if(args[0] === "sacar" || args[0] === "withdraw") {
         let coins_sacados = parseInt(args[1], 10)
 
-        if(!args[1]) return message.reply(`use: \`${prefix}banco sacar "quantidade de coins"\` sem as aspas!`)
+        if(!args[1]) return message.reply(mf["banco_7"].replace('{prefix}', prefix).replace('args0', args[0]).replace('$cmd', comando))
         if(args[1] === "max" || args[1] === "maximo" || args[1] === "all") {
-            let saqueMaximo = limite_carteira - coins
+            let saqueMaximo = limite_carteira - dbv.coins
             var saqueTotalMaximo;
-            saqueMaximo>banco_coins?saqueTotalMaximo=banco_coins:saqueMaximo<banco_coins?saqueTotalMaximo=saqueMaximo:saqueTotalMaximo=saqueMaximo
+            saqueMaximo>dbv.banco_coins?saqueTotalMaximo=dbv.banco_coins:saqueMaximo<dbv.banco_coins?saqueTotalMaximo=saqueMaximo:saqueTotalMaximo=saqueMaximo
 
-            if(saqueTotalMaximo === 0) return message.reply(`esta operação não pode ser realizada! Motivo: **você não tem nenhum coin para sacar!**`)
+            if(saqueTotalMaximo === 0) return message.reply(mf["banco_16"])
 
-            coins += saqueTotalMaximo
-            banco_coins -= saqueTotalMaximo
+            dbv.coins += saqueTotalMaximo
+            dbv.banco_coins -= saqueTotalMaximo
 
-            db.set(`${message.author.id}.coins`, coins)
-            db.set(`${message.author.id}.banco_coins`, banco_coins)
+            db.set(`${message.author.id}.coins`, dbv.coins)
+            db.set(`${message.author.id}.banco_coins`, dbv.banco_coins)
 
-            message.reply(saqueTotalMaximo===1?`operação realizada com sucesso! **${saqueTotalMaximo} coin** foi adicionado em sua carteira.`:`operação realizada com sucesso! **${saqueTotalMaximo} coins** foram adicionados em sua carteira.`)
+            message.reply(saqueTotalMaximo===1?mf["banco_17"]:mf["banco_18"].replace('{saqueTotalMaximo}', saqueTotalMaximo))
             return
         }
-        if(isNaN(args[1])) return message.reply(`o valor inserido precisa ser um número!`)
-        if(args[1] <= 0) return message.reply(`o valor inserido precisa ser no mínimo **1**!`)
-        if(args[1] > banco_coins) return message.reply(`você não tem coins suficiente para sacar!`)
-        let saqueVerificar = coins_sacados + coins
-        if(saqueVerificar > limite_carteira) return message.reply(`esta operação não pode ser realizada! Motivo: **o valor retirado ultrapassaria o limite da carteira.**`)
+        if(isNaN(args[1])) return message.reply(mf["banco_11"])
+        if(args[1] <= 0) return message.reply(mf["banco_12"])
+        if(args[1] > dbv.banco_coins) return message.reply(mf["banco_19"])
+        let saqueVerificar = coins_sacados + dbv.coins
+        if(saqueVerificar > limite_carteira) return message.reply(mf["banco_20"])
 
-        coins += coins_sacados
-        banco_coins -= coins_sacados
+        dbv.coins += coins_sacados
+        dbv.banco_coins -= coins_sacados
 
-        db.set(`${message.author.id}.coins`, coins)
-        db.set(`${message.author.id}.banco_coins`, banco_coins)
+        db.set(`${message.author.id}.coins`, dbv.coins)
+        db.set(`${message.author.id}.banco_coins`, dbv.banco_coins)
 
-        message.reply(coins_sacados===1?`operação realizada com sucesso! **${args[1]} coin** foi adicionado em sua carteira.`:`operação realizada com sucesso! **${args[1]} coins** foram adicionados em sua carteira.`)
+        message.reply(coins_sacados===1?mf["banco_21"]:mf["banco_22"].replace('args1', args[1]))
     }
 
     if(user) {
-        if(user.user.id === message.author.id) {
-            message.delete();
-            message.reply(`para ver quantos coins você tem na sua conta do banco, use: \`${prefix}banco\``)   
-                .then(msg => {
-                    setTimeout(function(){
-                        msg.delete()
-                    }, 7500)
-                })
-            return
-        }
+        if(user.user.id === message.author.id) return no_args()
 
+        let jornada_user = db.fetch(`${user.user.id}.jornada`)
         let banco_coins_user = db.fetch(`${user.user.id}.banco_coins`)
-        if(!banco_coins_user || banco_coins_user===null || banco_coins_user === undefined) {await db.set(`${user.user.id}.banco_coins`, 0)}
+        if(jornada_user === false || !jornada_user) return message.reply(mf["banco_25"])
 
         let embed = new MessageEmbed()
         .setColor("GREEN")
-        .setAuthor(`Conta do banco de ${user.user.username}`, user.user.avatarURL())
-        .setDescription(banco_coins_user===0?`**Ele não tem nenhum coin na conta do banco.**`:banco_coins_user===1?`**Ele tem \`${banco_coins_user} coin\` na conta do banco.**`:`**Ele tem \`${banco_coins_user} coins\` na conta do banco.**`)
+        .setAuthor(mf["banco_26"].replace('{user.user.username}', user.user.username), user.user.avatarURL())
+        .setDescription(banco_coins_user===0?mf["banco_27"]:banco_coins_user===1?mf["banco_28"]:mf["banco_29"].replace('{banco_coins_user}', banco_coins_user))
     
         message.channel.send(message.author, embed)
         return

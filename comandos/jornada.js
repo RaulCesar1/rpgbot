@@ -3,17 +3,16 @@ const cf = require('../utils/configs/config.json')
 const dbv = require('../index.js')
 const db = require('quick.db')
 
-var mf = require('../utils/configs/messages.json')
-mf = mf[dbv.idm]
+var mf = require(`../utils/idiomas/${dbv.idm}.json`)
 
 const token = cf.token
 const botID = cf.botID
-const prefix = cf.prefix
+var prefix = dbv.prefix
 
 exports.run = async(client, message, args) => {
-    if(dbv.manutencao === true) return message.reply(mf["geral"]["maintenance"])
+    if(dbv.manutencao === true) return message.reply(mf["maintenance"])
 
-    if(!args[0]) return message.reply(mf["commands"]["jornada"]["st/rs"].replace('PREFIX', prefix))
+    if(!args[0]) return message.reply(mf["st/rs"].replace('PREFIX', prefix))
 
     async function setar() {
         await db.set(`${message.author.id}.coins`, 0)
@@ -33,18 +32,18 @@ exports.run = async(client, message, args) => {
 
         try {
             await db.set(`${message.author.id}.jornada`, true)
-            await message.reply(mf["commands"]["jornada"]["GL"])
+            await message.reply(mf["GL"])
         }catch(e){
             console.log(e)
         }
     }
 
     if(args[0] === "reiniciar" || args[0] === "restart") {
-        //if(dbv.nivel < 5) return message.reply(mf["commands"]["jornada"]["min_level"])
+        //if(dbv.nivel < 5) return message.reply(mf["min_level"])
 
         let embedConfirmacao = new MessageEmbed()
         .setColor("RED")
-        .setAuthor(mf["commands"]["jornada"]["sure?"], message.author.avatarURL())
+        .setAuthor(mf["sure?"], message.author.avatarURL())
 
         message.channel.send(message.author, embedConfirmacao)
             .then(msg => {
@@ -64,14 +63,14 @@ exports.run = async(client, message, args) => {
                 c2.on('collect', m => {
                     message.delete()
                     msg.delete()
-                    message.reply(mf["geral"]["op_cancel"])
+                    message.reply(mf["op_cancel"])
                         .then(mm => setTimeout(() => mm.delete(), 4000))
                 })
             })
     }
 
     if(args[0] === "comecar" || args[0] === "start") {
-        if(jornada === true) return message.reply()
+        if(dbv.jornada === true) return message.reply(mf["alr_start"].replace('PREFIX', prefix))
         setar()
     }
 }

@@ -7,7 +7,7 @@ var mf = require(`../utils/idiomas/${dbv.idm}.json`)
 
 const token = cf.token
 const botID = cf.botID
-const prefix = cf.prefix
+var prefix = dbv.prefix
 
 exports.run = async(client, message, args) => {
     if(dbv.manutencao === true) return message.reply(mf["maintenance"])
@@ -17,13 +17,13 @@ exports.run = async(client, message, args) => {
         "PT"
     ]
 
-    if(!args[0]) return message.reply(`${mf["use"]} \`${prefix}idm ${mf["set"]}/${mf["list"]}\``)
+    if(!args[0]) return message.reply(mf["idm_1"].replace('{prefix}', prefix))
 
     if(args[0] === "set" || args[0] === "definir") {
 
         if(!message.member.hasPermission("ADMINISTRATOR")) return message.reply(mf["noperm"])
 
-        if(!args[1]) return message.reply(mf["idm_set_noargs1"].replace('PREFIX', prefix))
+        if(!args[1]) return message.reply(mf["idm_set_noargs1"].replace('PREFIX', prefix).replace('args1', args[0]))
 
         if(IDMS.indexOf(args[1].toUpperCase()) === -1) return message.reply(mf["un_idm"].replace('$idioma', args[1].toLowerCase().slice(0, 3)).replace('$prefix', prefix))
 
@@ -34,6 +34,7 @@ exports.run = async(client, message, args) => {
             await db.set(`${message.guild.id}.idm`, args[1].toLowerCase())
 
             dbv.idm = await db.fetch(`${message.guild.id}.idm`)
+            mf = require(`../utils/idiomas/${dbv.idm}.json`)
 
             await message.reply(`${mf["idm_def"]}`)
 
