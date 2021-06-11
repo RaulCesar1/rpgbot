@@ -129,6 +129,7 @@ client.on('message', async message => {
     comando==="forge"?carregarComando="forja":''
     comando==="prefixo"?carregarComando="prefix":''
     comando==="bank"?carregarComando="banco":''
+    comando==="moedas"?carregarComando="coins":''
 
     if(carregarComando) {
       let acmd = require(`./comandos/${carregarComando}.js`)

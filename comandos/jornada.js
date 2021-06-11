@@ -9,14 +9,14 @@ const token = cf.token
 const botID = cf.botID
 var prefix = dbv.prefix
 
-exports.run = async(client, message, args) => {
+exports.run = async(client, message, args, comando) => {
     if(dbv.manutencao === true) return message.reply(mf["maintenance"])
 
-    if(!args[0]) return message.reply(mf["st/rs"].replace('PREFIX', prefix))
+    if(!args[0]) return message.reply(mf["st/rs"].replace('{prefix}', prefix).replace('{cmd}', comando))
 
     async function setar() {
-        await db.set(`${message.author.id}.coins`, 0)
-        await db.set(`${message.author.id}.banco_coins`, 0)
+        await db.set(`${message.author.id}.coins`, 1500)
+        await db.set(`${message.author.id}.banco_coins`, 1500)
         await db.set(`${message.author.id}.limite_carteira`, 2000)
         await db.set(`${message.author.id}.nivel`, 1)
         await db.set(`${message.author.id}.xp`, 0)
