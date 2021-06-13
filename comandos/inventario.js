@@ -4,7 +4,6 @@ const token = configFile.token;
 const botID = configFile.botID;
 const prefix = configFile.prefix;
 const db = require('quick.db')
-const msgsFile = require('../utils/configs/messages.json')
 
 exports.run = async(client, message, args) => {
     var coins = db.fetch(`${message.author.id}.coins`)

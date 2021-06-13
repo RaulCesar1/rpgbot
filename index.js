@@ -5,6 +5,11 @@ const token = configFile.token;
 const botID = configFile.botID;
 const db = require('quick.db')
 
+const rpg_config = require('./utils/configs/rpg_config.json')
+const max_level = rpg_config.max_level
+const up_xp = rpg_config.up_xp
+const msg_xp = rpg_config.msg_xp
+
 client.login(token)
 
 client.on('ready', () => {
@@ -17,7 +22,7 @@ client.on('message', async message => {
 
     var prefix = await db.fetch(`${message.guild.id}.prefix`)
     var coins = await db.fetch(`${message.author.id}.coins`)
-    var banco_coins = await db.fetch(`${message.author.id}.banco_coins`)
+    var banco_coins =  await db.fetch(`${message.author.id}.banco_coins`)
     var limite_carteira = await db.fetch(`${message.author.id}.limite_carteira`)
     var nivel = await db.fetch(`${message.author.id}.nivel`)
     var xp = await db.fetch(`${message.author.id}.xp`)
@@ -56,7 +61,10 @@ client.on('message', async message => {
       manutencao: manutencao,
       idm: idm,
       frags: frags,
-      prefix: prefix
+      prefix: prefix,
+      max_level: max_level,
+      up_xp: up_xp,
+      msg_xp: msg_xp
     }
     
     if(message.content.startsWith(`<@${botID}>`) || message.content.startsWith(`<@!${botID}>`))
@@ -64,55 +72,35 @@ client.on('message', async message => {
 
     if(!message.content.startsWith(prefix)) {
       if(jornada === true) {
-        xp += 1
-        if(xp >= 250) {
+        xp += msg_xp
+
+        if(xp >= up_xp) {
+
+          if(nivel === max_level) return;
+
           nivel += 1
           db.set(`${message.author.id}.xp`, 0)
           db.set(`${message.author.id}.nivel`, nivel)
           limite_itens += 10
           db.set(`${message.author.id}.limite_itens`, limite_itens)
 
-          if(limite_carteira - coins === 0) {
-            let paraBanco = 250
-            banco_coins += paraBanco
+          banco_coins += 250
 
-            db.set(`${message.author.id}.banco_coins`, banco_coins)
+          db.set(`${message.author.id}.banco_coins`, banco_coins)
 
-            let embed = new MessageEmbed()
-            .setAuthor(`Você upou de nível!`)
-            .setDescription(`**\`${nivel - 1} --> ${nivel}\`**`)
-            .addField('Recompensas:', `Limite de itens no inventário aumentado para **\`${limite_itens}!\`**\n**\`250 coins\`** foram adicionados na sua conta do banco!`)
-            .setColor("#51f1ff")
-            message.channel.send(message.author, embed)
-          } else if(limite_carteira - coins < 250) {
-            let diferenca = limite_carteira - coins
-            let paraBanco = 250 - diferenca
+          let embed = new MessageEmbed()
+          .setAuthor(mf["index_1"])
+          .setDescription(`**\`${nivel-1} ➠ ${nivel}\`**`)
+          .addField(mf["index_2"],
+          mf["index_3"].replace('{limite_itens}', limite_itens)+'\n'+
+          mf["index_4"].replace('{prefix}', prefix)
+          )
+          .setColor("#51f1ff")
+          message.channel.send(message.author, embed)
 
-            coins += diferenca
-            banco_coins += paraBanco
-
-            db.set(`${message.author.id}.coins`, coins)
-            db.set(`${message.author.id}.banco_coins`, banco_coins)
-
-            let embed = new MessageEmbed()
-            .setAuthor(`Você upou de nível!`)
-            .setDescription(`**\`${nivel - 1} --> ${nivel}\`**`)
-            .addField('Recompensas:', `Limite de itens no inventário aumentado para **\`${limite_itens}!\`**\n**\`${paraBanco} coins\`** foram adicionados na sua conta do banco!\n**\`${diferenca} coins\`** foram adicionados na sua carteira!`)
-            .setColor("#51f1ff")
-            message.channel.send(message.author, embed)
-          } else {
-            coins += 250
-            db.set(`${message.author.id}.coins`, coins)
-
-            let embed = new MessageEmbed()
-            .setAuthor(`Você upou de nível!`)
-            .setDescription(`**\`${nivel - 1} --> ${nivel}\`**`)
-            .addField('Recompensas:', `Limite de itens no inventário aumentado para **\`${limite_itens}!\`**\n**\`250 coins\`** foram adicionados na sua carteira!`)
-            .setColor("#51f1ff")
-            message.channel.send(message.author, embed)
-          }
           return
         }
+        
         db.set(`${message.author.id}.xp`, xp)
       }
       return
@@ -130,6 +118,8 @@ client.on('message', async message => {
     comando==="prefixo"?carregarComando="prefix":''
     comando==="bank"?carregarComando="banco":''
     comando==="moedas"?carregarComando="coins":''
+    comando==="maintenance"?carregarComando="manutencao":''
+    comando==="inventory"?carregarComando="inventario":''
 
     if(carregarComando) {
       let acmd = require(`./comandos/${carregarComando}.js`)

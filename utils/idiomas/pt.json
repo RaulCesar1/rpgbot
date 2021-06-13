@@ -39,7 +39,7 @@
     "banco_4": "**Você não tem nenhum coin na sua conta do banco.**",
     "banco_5": "**Você tem `1 coin` na sua conta do banco.**",
     "banco_6": "**Você tem `{banco_coins} coins` na sua conta do banco.**",
-    "banco_7": "use: `{prefix}$cmd args0 'quantidade-de-coins'` sem as aspas!",
+    "banco_7": "use: `{prefix}banco depositar 'quantidade-de-coins'` sem as aspas!",
     "banco_8": "esta operação não pode ser realizada! **Você não tem nenhum coin para depositar.**",
     "banco_9": "operação realizada com sucesso! **1 coin** foi depositado em sua conta do banco.",
     "banco_10": "operação realizada com sucesso! **{banco_coins} coins** foram depositados em sua conta do banco.",
@@ -62,6 +62,7 @@
     "banco_27": "**Ele não tem nenhum coin na conta do banco.**",
     "banco_28": "**Ele tem `1 coin` na conta do banco.**",
     "banco_29": "**Ele tem `{banco_coins_user} coins` na conta do banco.**",
+    "banco_30": "use: `{prefix}banco sacar 'quantidade-de-coins'` sem as aspas!",
 
     "coins_1": "Sua carteira",
     "coins_2": "**Você não tem nenhuma moeda na sua carteira.**",
@@ -75,11 +76,18 @@
     "coins_10": "**Ele tem `1 moeda` na carteira.**",
     "coins_11": "**Ele tem `{userCoins} moedas` na carteira.**",
     "coins_12": "use: `{prefix}moedas enviar 'usuário' 'quantidade-de-moedas'` sem as aspas!",
-    "coins_13": "você não pode enviar moedas para si mesmo",
+    "coins_13": "você não pode enviar moedas para si mesmo!",
     "coins_14": "a quantidade de moedas precisa ser um número!",
     "coins_15": "a quantidade de moedas precisa ser maior que **0**!",
     "coins_16": "você não tem a quantidade de moedas suficiente para enviar!",
     "coins_17": "esta operação não pode ser realizada! **O valor enviado ultrapassaria o limite da carteira do usuário.**",
     "coins_18": "moeda enviada com sucesso! **1 moeda** foi enviada para {user.user.username}",
-    "coins_19": "moedas enviadas com sucesso! **{quantidadeCoins} moedas** foram enviadas para {user.user.username}"
+    "coins_19": "moedas enviadas com sucesso! **{quantidadeCoins} moedas** foram enviadas para {user.user.username}",
+
+    "manutencao_1": "A manutenção do bot está: {manutencao}",
+
+    "index_1": "Você upou de nível!",
+    "index_2": "Recompensas:",
+    "index_3": "Limite de itens no inventário aumentado para **`{limite_itens}`**!",
+    "index_4": "**`250 moedas`** foram adicionadas na sua conta do banco! Utilize: **`{prefix}banco`**"
 }

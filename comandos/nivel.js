@@ -9,47 +9,47 @@ const token = cf.token
 const botID = cf.botID
 var prefix = dbv.prefix
 
-exports.run = async(client, message, args) => {
+exports.run = async(client, message, args, comando) => {
     if(dbv.manutencao === true) return message.reply(mf["maintenance"])
-    if(!dbv.jornada || dbv.jornada === false) return message.reply(mf["to_start"])
+    if(!dbv.jornada || dbv.jornada === false) return message.reply(mf["to_start"].replace('PREFIX', prefix))
 
     const user = message.guild.member(message.mentions.users.first()) || message.guild.members.cache.get(args[0])
 
-    if(!args[0]) {
+    const jornada_porcentagem = Math.floor((dbv.nivel * 100) / dbv.max_level)
+
+    function no_args() {
         let embed = new MessageEmbed()
         .setColor("RED")
-        .setAuthor(`Você é nível ${nivel}`, message.author.avatarURL())
+        .setAuthor(`Você é nível ${dbv.nivel}`, message.author.avatarURL())
         .setDescription(
-            `XP atual: **\`${xp}/250\`**\n\n`
-           +`XP para o próximo nível: **\`${250 - xp}\`**`
+            `XP atual: **\`${dbv.xp}\`**\n`
+           +`XP para o próximo nível: **\`${dbv.up_xp - dbv.xp}\`**\n\n`
+           +`Sua jornada está ${jornada_porcentagem}% concluída!`
         )
 
         message.channel.send(message.author, embed)
+        return
     }
 
+    if(!args[0]) return no_args()
+
     if(user) {
-        if(user.user.id === message.author.id) {
-            message.delete();
-            message.reply(`para ver seu nível, use: \`${prefix}nivel\``)   
-                .then(msg => {
-                    setTimeout(function(){
-                        msg.delete()
-                    }, 7500)
-                })
-            return
-        }
+        if(user.user.id === message.author.id) return no_args()
 
         let nivel_user = db.fetch(`${user.user.id}.nivel`)
-        if(!nivel_user || nivel_user === null || nivel_user === 0 || nivel_user === undefined || isNaN(nivel_user)) {await db.set(`${user.user.id}.nivel`, 1)}
         let xp_user = db.fetch(`${user.user.id}.xp`)
-        if(!xp_user || xp_user === null || xp_user === undefined || isNaN(xp_user)) {await db.set(`${user.user.id}.xp`, 0)}
+        let jornada_user = db.fetch(`${user.user.id}.jornada`)
+        if(jornada_user === false || !jornada_user) return message.reply(mf["banco_25"])
+
+        let jornada_porcentagem_user = Math.floor((nivel_user * 100) / dbv.max_level)
 
         let embed = new MessageEmbed()
         .setColor("RED")
         .setAuthor(`${user.user.username} é nível ${nivel_user}`, user.user.avatarURL())
         .setDescription(
-            `XP atual: **\`${xp_user}/250\`**\n\n`
-           +`XP para o próximo nível: **\`${250 - xp_user}\`**`
+            `XP atual: **\`${xp_user}\`**\n`
+           +`XP para o próximo nível: **\`${dbv.up_xp - xp_user}\`**\n\n`
+           +`A jornada dele está ${jornada_porcentagem_user}% concluída!`
         )
 
         message.channel.send(message.author, embed)

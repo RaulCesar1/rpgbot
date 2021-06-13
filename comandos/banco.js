@@ -54,7 +54,7 @@ exports.run = async(client, message, args, comando) => {
     if(args[0] === "depositar" || args[0] === "deposit") {
         let coins_depositados = parseInt(args[1], 10)
 
-        if(!args[1]) return message.reply(mf["banco_7"].replace('{prefix}', prefix).replace('args0', args[0]).replace('$cmd', comando))
+        if(!args[1]) return message.reply(mf["banco_7"].replace('{prefix}', prefix))
         if(args[1] === "max" || args[1] === "maximo" || args[1] === "all") {
             let maxDeposito = dbv.coins
 
@@ -85,7 +85,7 @@ exports.run = async(client, message, args, comando) => {
     if(args[0] === "sacar" || args[0] === "withdraw") {
         let coins_sacados = parseInt(args[1], 10)
 
-        if(!args[1]) return message.reply(mf["banco_7"].replace('{prefix}', prefix).replace('args0', args[0]).replace('$cmd', comando))
+        if(!args[1]) return message.reply(mf["banco_30"].replace('{prefix}', prefix))
         if(args[1] === "max" || args[1] === "maximo" || args[1] === "all") {
             let saqueMaximo = limite_carteira - dbv.coins
             var saqueTotalMaximo;

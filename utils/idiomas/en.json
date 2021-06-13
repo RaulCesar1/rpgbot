@@ -39,7 +39,7 @@
     "banco_4": "**You don't have any coin in your bank account.**",
     "banco_5": "**You have `1 coin` in your bank account.**",
     "banco_6": "**You have `{banco_coins} coins` in your bank account.**",
-    "banco_7": "use: `{prefix}$cmd args0 'amount-of-coins'` without the quotes!",
+    "banco_7": "use: `{prefix}bank deposit 'amount-of-coins'` without the quotes!",
     "banco_8": "this operation cannot be performed! **You don't have any coin to deposit.**",
     "banco_9": "operation performed successfully! **1 coin** has been deposited into your bank account.",
     "banco_10": "operation performed successfully! **{banco_coins} coins** have been deposited into your bank account.",
@@ -62,6 +62,7 @@
     "banco_27": "**He doesn't have any coin in his bank account.**",
     "banco_28": "**He has `1 coin` in his bank account.**",
     "banco_29": "**He has `{banco_coins_user} coins` in his bank account.**",
+    "banco_30": "use: `{prefix}bank withdraw 'amount-of-coins'` without the quotes!",
 
     "coins_1": "Your wallet",
     "coins_2": "**You don't have any coins in your wallet.**",
@@ -75,11 +76,18 @@
     "coins_10": "**He has `1 coin` in his wallet.**",
     "coins_11": "**He has `{userCoins} coins` in his wallet.**",
     "coins_12": "use: `{prefix}coins send 'user' 'amount-of-coins'` without the quotes!",
-    "coins_13": "you can't send coins to yourself",
+    "coins_13": "you can't send coins to yourself!",
     "coins_14": "the amount of coins must be a number!",
     "coins_15": "the amount of coins must be greater than **0**!",
     "coins_16": "you don't have enough coins to send!",
     "coins_17": "this operation cannot be performed! **The amount sent would exceed the user's wallet limit.**",
     "coins_18": "coin sent successfully! **1 coin** was sent to {user.user.username}",
-    "coins_19": "coins sent successfully! **{amountCoins} coins** were sent to {user.user.username}"
+    "coins_19": "coins sent successfully! **{quantidadeCoins} coins** were sent to {user.user.username}",
+
+    "manutencao_1": "Bot maintenance is: {manutencao}",
+
+    "index_1": "You have leveled up!",
+    "index_2": "Rewards:",
+    "index_3": "Inventory item limit increased to **`{limite_itens}`**!",
+    "index_4": "**`250 coins`** have been added to your bank account! Use: **`{prefix}bank`**"
 }
