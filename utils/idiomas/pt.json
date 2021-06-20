@@ -4,7 +4,7 @@
     "min_level": "você precisa ser nível 5+ para reiniciar sua jornada!",
     "GL": "você começou sua jornada. Boa sorte!",
     "journey": "jornada",
-    "st/rs": "use: `{prefix}{cmd} 'comecar' ou 'reiniciar'`",
+    "st/rs": "use: `{prefix}jornada 'comecar' ou 'reiniciar'`",
     "sure?": "Tem certeza que deseja reiniciar sua jornada?",
     "list_title": "Lista de idiomas:",
     "lang": "idioma",
@@ -22,13 +22,13 @@
     "no_quotes": "sem as aspas!",
     "op_cancel": "evento cancelado!",
     "level_up_title": "Você subiu de nível!",
-    "idm_set_noargs1": "use: `PREFIXidm args1 'idioma'`",
+    "idm_set_noargs1": "use: `PREFIXidm definir 'idioma'`",
     "prefix_cmd_no_args": "use: `$prefixprefix definir/resetar`",
-    "prefix_cmd_no_args_2": "use: `$prefixprefix $set 'prefixo'`",
+    "prefix_cmd_no_args_2": "use: `$prefixprefix definir 'prefixo'`",
     "prefix_cmd_m3": "o prefixo não pode ser maior que 3 caracteres!",
     "prefix_cmd_defined": "novo prefixo definido com sucesso! Prefixo: `{prefix}`",
     "bot_mention": "meu prefixo nesse servidor é: `{prefix}`",
-    "prefix_cmd_reset": "prefixo resetado para `!`",
+    "prefix_cmd_reset": "prefixo resetado para `r!`",
     "prefix_in_use": "este prefixo já está em uso!",
 
     "idm_1": "use: `{prefix}idm definir/lista`",
@@ -89,5 +89,10 @@
     "index_1": "Você upou de nível!",
     "index_2": "Recompensas:",
     "index_3": "Limite de itens no inventário aumentado para **`{limite_itens}`**!",
-    "index_4": "**`250 moedas`** foram adicionadas na sua conta do banco! Utilize: **`{prefix}banco`**"
+    "index_4": "**`250 moedas`** foram adicionadas na sua conta do banco! Utilize: **`{prefix}banco`**",
+
+    "nivel_1": "Você é nível {nivel}",
+    "nivel_2": "XP atual: **`{xp}`**",
+    "nivel_3": "XP para o próximo nível: **`{calc}`**",
+    "nivel_4": "{user.user.username} é nível {nivel_user}"
 }

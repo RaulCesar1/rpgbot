@@ -5,11 +5,6 @@ const token = configFile.token;
 const botID = configFile.botID;
 const db = require('quick.db')
 
-const rpg_config = require('./utils/configs/rpg_config.json')
-const max_level = rpg_config.max_level
-const up_xp = rpg_config.up_xp
-const msg_xp = rpg_config.msg_xp
-
 client.login(token)
 
 client.on('ready', () => {
@@ -20,26 +15,28 @@ client.on('message', async message => {
     if(message.author.bot) return;
     if(message.channel.type === "dm") return;
 
-    var prefix = await db.fetch(`${message.guild.id}.prefix`)
-    var coins = await db.fetch(`${message.author.id}.coins`)
-    var banco_coins =  await db.fetch(`${message.author.id}.banco_coins`)
-    var limite_carteira = await db.fetch(`${message.author.id}.limite_carteira`)
-    var nivel = await db.fetch(`${message.author.id}.nivel`)
-    var xp = await db.fetch(`${message.author.id}.xp`)
-    var limite_itens = await db.fetch(`${message.author.id}.limite_itens`)
-    var inventario_itens = await db.fetch(`${message.author.id}.inventario_itens`)
-    var arma_equipada = await db.fetch(`${message.author.id}.arma_equipada`)
-    var armadura_equipada = await db.fetch(`${message.author.id}.armadura_equipada`)
-    var magias_equipadas = await db.fetch(`${message.author.id}.magias_equipadas`)
-    var magias = await db.fetch(`${message.author.id}.magias`)
-    var armaduras = await db.fetch(`${message.author.id}.armaduras`)
-    var armas = await db.fetch(`${message.author.id}.armas`)
-    var jornada = await db.fetch(`${message.author.id}.jornada`)
-    var idm = await db.fetch(`${message.guild.id}.idm`)
-    var manutencao = await db.fetch('manutencao')
-    var frags = await db.fetch(`${message.author.id}.frags`)
-    if(!idm) {await db.set(`${message.guild.id}.idm`, 'en')}
-    if(!prefix) {await db.set(`${message.guild.id}.prefix`, '!')}
+    var prefix = db.fetch(`${message.guild.id}.prefix`)
+    var coins = db.fetch(`${message.author.id}.coins`)
+    var banco_coins =  db.fetch(`${message.author.id}.banco_coins`)
+    var limite_carteira = db.fetch(`${message.author.id}.limite_carteira`)
+    var nivel = db.fetch(`${message.author.id}.nivel`)
+    var xp = db.fetch(`${message.author.id}.xp`)
+    var limite_itens = db.fetch(`${message.author.id}.limite_itens`)
+    var inventario_itens = db.fetch(`${message.author.id}.inventario_itens`)
+    var arma_equipada = db.fetch(`${message.author.id}.arma_equipada`)
+    var armadura_equipada = db.fetch(`${message.author.id}.armadura_equipada`)
+    var magias_equipadas = db.fetch(`${message.author.id}.magias_equipadas`)
+    var magias = db.fetch(`${message.author.id}.magias`)
+    var armaduras = db.fetch(`${message.author.id}.armaduras`)
+    var armas = db.fetch(`${message.author.id}.armas`)
+    var jornada = db.fetch(`${message.author.id}.jornada`)
+    var idm = db.fetch(`${message.guild.id}.idm`)
+    var manutencao = db.fetch('manutencao')
+    var frags = db.fetch(`${message.author.id}.frags`)
+    var up_xp = db.fetch(`${message.author.id}.up_xp`)
+    var msg_xp = db.fetch(`${message.author.id}.msg_xp`)
+    if(!idm || idm===false) {await db.set(`${message.guild.id}.idm`, 'en')}
+    if(!prefix || prefix===false) {await db.set(`${message.guild.id}.prefix`, 'r!')}
 
     const mf = require(`./utils/idiomas/${idm}.json`)
 
@@ -62,7 +59,6 @@ client.on('message', async message => {
       idm: idm,
       frags: frags,
       prefix: prefix,
-      max_level: max_level,
       up_xp: up_xp,
       msg_xp: msg_xp
     }
@@ -75,27 +71,28 @@ client.on('message', async message => {
         xp += msg_xp
 
         if(xp >= up_xp) {
-
-          if(nivel === max_level) return;
-
           nivel += 1
           db.set(`${message.author.id}.xp`, 0)
           db.set(`${message.author.id}.nivel`, nivel)
+
           limite_itens += 10
           db.set(`${message.author.id}.limite_itens`, limite_itens)
 
-          banco_coins += 250
+          up_xp += 10
+          db.set(`${message.author.id}.up_xp`, up_xp)
 
+          banco_coins += 250
           db.set(`${message.author.id}.banco_coins`, banco_coins)
 
           let embed = new MessageEmbed()
           .setAuthor(mf["index_1"])
           .setDescription(`**\`${nivel-1} ➠ ${nivel}\`**`)
           .addField(mf["index_2"],
-          mf["index_3"].replace('{limite_itens}', limite_itens)+'\n'+
-          mf["index_4"].replace('{prefix}', prefix)
+            mf["index_3"].replace('{limite_itens}', limite_itens)+'\n'+
+            mf["index_4"].replace('{prefix}', prefix)
           )
           .setColor("#51f1ff")
+
           message.channel.send(message.author, embed)
 
           return

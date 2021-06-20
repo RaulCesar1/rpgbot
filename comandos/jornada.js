@@ -1,18 +1,18 @@
 const { Discord, Client, MessageEmbed } = require('discord.js')
 const cf = require('../utils/configs/config.json')
-const dbv = require('../index.js')
 const db = require('quick.db')
-
-var mf = require(`../utils/idiomas/${dbv.idm}.json`)
 
 const token = cf.token
 const botID = cf.botID
-var prefix = dbv.prefix
 
-exports.run = async(client, message, args, comando) => {
+exports.run = async(client, message, args) => {
+    const dbv = require('../index.js')
+    var mf = require(`../utils/idiomas/${dbv.idm}.json`)
+    var prefix = dbv.prefix
+
     if(dbv.manutencao === true) return message.reply(mf["maintenance"])
 
-    if(!args[0]) return message.reply(mf["st/rs"].replace('{prefix}', prefix).replace('{cmd}', comando))
+    if(!args[0]) return message.reply(mf["st/rs"].replace('{prefix}', prefix))
 
     async function setar() {
         await db.set(`${message.author.id}.coins`, 1500)
@@ -29,6 +29,9 @@ exports.run = async(client, message, args, comando) => {
         await db.set(`${message.author.id}.armaduras`, [])
         await db.set(`${message.author.id}.armas`, [])
         await db.set(`${message.author.id}.frags`, 0)
+        
+        await db.set(`${message.author.id}.up_xp`, 150)
+        await db.set(`${message.author.id}.msg_xp`, 1)
 
         try {
             await db.set(`${message.author.id}.jornada`, true)

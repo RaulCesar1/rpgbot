@@ -1,15 +1,15 @@
 const { Discord, Client, MessageEmbed } = require('discord.js')
 const cf = require('../utils/configs/config.json')
-const dbv = require('../index.js')
 const db = require('quick.db')
-
-var mf = require(`../utils/idiomas/${dbv.idm}.json`)
 
 const token = cf.token
 const botID = cf.botID
-var prefix = dbv.prefix
 
 exports.run = async(client, message, args) => {
+    const dbv = require('../index.js')
+    var mf = require(`../utils/idiomas/${dbv.idm}.json`)
+    var prefix = dbv.prefix
+
     if(dbv.manutencao === true) return message.reply(mf["maintenance"])
 
     const IDMS = [
@@ -23,7 +23,7 @@ exports.run = async(client, message, args) => {
 
         if(!message.member.hasPermission("ADMINISTRATOR")) return message.reply(mf["noperm"])
 
-        if(!args[1]) return message.reply(mf["idm_set_noargs1"].replace('PREFIX', prefix).replace('args1', args[0]))
+        if(!args[1]) return message.reply(mf["idm_set_noargs1"].replace('PREFIX', prefix))
 
         if(IDMS.indexOf(args[1].toUpperCase()) === -1) return message.reply(mf["un_idm"].replace('$idioma', args[1].toLowerCase().slice(0, 3)).replace('$prefix', prefix))
 
@@ -34,7 +34,6 @@ exports.run = async(client, message, args) => {
             await db.set(`${message.guild.id}.idm`, args[1].toLowerCase())
 
             dbv.idm = await db.fetch(`${message.guild.id}.idm`)
-            mf = require(`../utils/idiomas/${dbv.idm}.json`)
 
             await message.reply(`${mf["idm_def"]}`)
 

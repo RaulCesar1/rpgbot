@@ -4,7 +4,7 @@
     "min_level": "you must be level 5+ to restart your journey!",
     "GL": "you started your journey. Good luck!",
     "journey": "journey",
-    "st/rs": "use: `{prefix}{cmd} 'start' or 'restart'`",
+    "st/rs": "use: `{prefix}journey 'start' or 'restart'`",
     "sure?": "Are you sure you want to restart your journey?",
     "list_title": "Languages list:",
     "lang": "language",
@@ -21,14 +21,14 @@
     "use": "use:",
     "no_quotes": "without the quotes!",
     "op_cancel": "event canceled!",
-    "level_up_title": "You have leveled up!",
-    "idm_set_noargs1": "use: `PREFIXidm args1 'language'`",
+    "nivel_up_title": "You have leveled up!",
+    "idm_set_noargs1": "use: `PREFIXidm set 'language'`",
     "prefix_cmd_no_args": "use: `$prefixprefix set/reset`",
-    "prefix_cmd_no_args_2": "use: `$prefixprefix $set 'prefix'`",
+    "prefix_cmd_no_args_2": "use: `$prefixprefix set 'prefix'`",
     "prefix_cmd_m3": "the prefix cannot be longer than 3 characters!",
     "prefix_cmd_defined": "new prefix set successfully! Prefix: `{prefix}`",
     "bot_mention": "my prefix on this server is: `{prefix}`",
-    "prefix_cmd_reset": "prefix reset to `!`",
+    "prefix_cmd_reset": "prefix reset to `r!`",
     "prefix_in_use": "this prefix is already in use!",
 
     "idm_1": "use: `{prefix}idm set/list`",
@@ -89,5 +89,10 @@
     "index_1": "You have leveled up!",
     "index_2": "Rewards:",
     "index_3": "Inventory item limit increased to **`{limite_itens}`**!",
-    "index_4": "**`250 coins`** have been added to your bank account! Use: **`{prefix}bank`**"
+    "index_4": "**`250 coins`** have been added to your bank account! Use: **`{prefix}bank`**",
+
+    "nivel_1": "You are level {nivel}",
+    "nivel_2": "Current XP: **`{xp}`**",
+    "nivel_3": "XP to the next level: **`{calc}`**",
+    "nivel_4": "{user.user.username} is level {nivel_user}"
 }
