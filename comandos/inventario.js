@@ -15,63 +15,56 @@ exports.run = async(client, message, args) => {
 
     const user = message.guild.member(message.mentions.users.first()) || message.guild.members.cache.get(args[0])
 
-    if(!args[0]) {
+    function no_args() {
         let embedPrincipal = new MessageEmbed()
         .setColor("BLUE")
-        .setAuthor(`Seu inventário - Itens equipados`, message.author.avatarURL())
-        .addField(`Arma Equipada:`, arma_equipada.length===0?'Você não equipou nenhuma arma ainda!':arma_equipada)
-        .addField(`Armadura Equipada:`, armadura_equipada.length===0?'Você não equipou nenhuma armadura ainda!':armadura_equipada)
-        .addField(magias_equipadas.length===1?'Magia Equipada:':'Magias Equipadas:', magias_equipadas.length===0?'Você não equipou nenhuma magia ainda!':magias_equipadas)
+        .setAuthor(mf["inv_1"], message.author.avatarURL())
+        .addField(mf["inv_14"], dbv.arma_equipada.length===0?mf["inv_15"]:dbv.arma_equipada)
+        .addField(mf["inv_16"], dbv.armadura_equipada.length===0?mf["inv_17"]:dbv.armadura_equipada)
+        .addField(dbv.magias_equipadas.length===1?mf["inv_18"]:mf["inv_19"], dbv.magias_equipadas.length===0?mf["inv_20"]:dbv.magias_equipadas)
 
         let embedInventario = new MessageEmbed()
         .setColor("BLUE")
-        .setAuthor(`Seu inventário - Todos os itens`, message.author.avatarURL())
-        .setDescription(inventario_itens.length===0?'**Você não possui nenhum item!**':inventario_itens)
+        .setAuthor(mf["inv_13"], message.author.avatarURL())
+        .setDescription(dbv.inventario_itens.length===0?mf["inv_12"]:dbv.inventario_itens)
 
         let embedTips = new MessageEmbed()
         .setColor("BLUE")
-        .setAuthor(`Seu inventário - Informações`, message.author.avatarURL())
-        .setDescription(`**Limite do inventário: \`${limite_itens} itens\`**`)
-        .addField(
-            'Categoria dos emojis:',
-            ':crossed_swords: - Suas armas.\n\n'+
-            ':fire: - Suas magias.\n\n'+
-            ':mechanical_arm: - Suas armaduras.\n\n'+
-            ':briefcase: - Todos os seus itens.\n\n'+
-            ':white_check_mark: - Itens equipados.'
-        )
+        .setAuthor(mf["inv_11"], message.author.avatarURL())
+        .setDescription(mf["inv_10"].replace('{limite_itens}', dbv.limite_itens))
+        .addField(mf["inv_3"], mf["inv_2"])
 
         let embedArmas = new MessageEmbed()
         .setColor("BLUE")
-        .setAuthor(`Seu inventário - Armas`, message.author.avatarURL())
-        .setDescription(armas.length===0?'**Você não possui nenhuma arma!**':armas)
+        .setAuthor(mf["inv_7"], message.author.avatarURL())
+        .setDescription(dbv.armas.length===0?mf["inv_4"]:dbv.armas)
 
         let embedArmaduras = new MessageEmbed()
         .setColor("BLUE")
-        .setAuthor(`Seu inventário - Armaduras`, message.author.avatarURL())
-        .setDescription(armaduras.length===0?'**Você não possui nenhuma armadura!**':armaduras)
+        .setAuthor(mf["inv_8"], message.author.avatarURL())
+        .setDescription(dbv.armaduras.length===0?mf["inv_5"]:dbv.armaduras)
 
         let embedMagias = new MessageEmbed()
         .setColor("BLUE")
-        .setAuthor(`Seu inventário - Magias`, message.author.avatarURL())
-        .setDescription(magias.length===0?'**Você não possui nenhuma magia!**':magias)
+        .setAuthor(mf["inv_9"], message.author.avatarURL())
+        .setDescription(dbv.magias.length===0?mf["inv_6"]:dbv.magias)
     
         message.channel.send(message.author, embedPrincipal)
             .then(msg => {
                 msg.react('❗'); msg.react('✅'); msg.react('💼'); msg.react('⚔️'); msg.react('🔥'); msg.react('🦾')
 
                 let f1 = (r, u) => r.emoji.name === "❗" && u.id === message.author.id;
-                let c1 = msg.createReactionCollector(f1, {max: 100})
+                let c1 = msg.createReactionCollector(f1, {max: 20})
                 let f2 = (r, u) => r.emoji.name === "💼" && u.id === message.author.id;
-                let c2 = msg.createReactionCollector(f2, {max: 100})
+                let c2 = msg.createReactionCollector(f2, {max: 20})
                 let f3 = (r, u) => r.emoji.name === "✅" && u.id === message.author.id;
-                let c3 = msg.createReactionCollector(f3, {max: 100})
+                let c3 = msg.createReactionCollector(f3, {max: 20})
                 let f4 = (r, u) => r.emoji.name === "⚔️" && u.id === message.author.id;
-                let c4 = msg.createReactionCollector(f4, {max: 100})
+                let c4 = msg.createReactionCollector(f4, {max: 20})
                 let f5 = (r, u) => r.emoji.name === "🔥" && u.id === message.author.id;
-                let c5 = msg.createReactionCollector(f5, {max: 100})
+                let c5 = msg.createReactionCollector(f5, {max: 20})
                 let f6 = (r, u) => r.emoji.name === "🦾" && u.id === message.author.id;
-                let c6 = msg.createReactionCollector(f6, {max: 100})
+                let c6 = msg.createReactionCollector(f6, {max: 20})
 
                 c1.on('collect', m => {
                     msg.reactions.resolve('❗').users.remove(message.author.id)
@@ -105,9 +98,11 @@ exports.run = async(client, message, args) => {
             })
         return
     }
+
+    if(!args[0]) return no_args()
     
     if(args[0] === "equipar") {
-        let escolhas = ["arma", "armadura", "magia"]
+        let escolhas = ["arma", "armadura", "magia", "weapon", "armor", "spell"]
         let escolhido = "";
         
         if(!args[1]) return message.reply(`use: \`${prefix}inventario equipar "arma/armadura/magia" "nome do item"\` sem as aspas!`)
@@ -152,19 +147,11 @@ exports.run = async(client, message, args) => {
     }
 
     if(user) {
-        if(user.user.id === message.author.id) {
-            message.delete();
-            message.reply(`para ver seu próprio inventário, use: \`${prefix}inventario\``)   
-                .then(msg => {
-                    setTimeout(function(){
-                        msg.delete()
-                    }, 7500)
-                })
-            return
-        }
+        if(user.user.id === message.author.id) return no_args()
 
         let inventario_itens_user = db.fetch(`${user.user.id}.inventario_itens`)
-        if(!inventario_itens_user || inventario_itens_user === null || inventario_itens_user === 0) {await db.set(`${user.user.id}.inventario_itens`, [])}
+        let jornada_user = db.fetch(`${user.user.id}.jornada`)
+        if(jornada_user === false || !jornada_user) return message.reply(mf["banco_25"])
 
         let embed = new MessageEmbed()
         .setColor("BLUE")

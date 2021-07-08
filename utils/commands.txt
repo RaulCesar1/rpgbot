@@ -5,7 +5,7 @@ const db = require('quick.db')
 const token = cf.token
 const botID = cf.botID
 
-exports.run = async(client, message, args) => {
+exports.run = async(client, message, args, comando) => {
     const dbv = require('../index.js')
     var mf = require(`../utils/idiomas/${dbv.idm}.json`)
     var prefix = dbv.prefix

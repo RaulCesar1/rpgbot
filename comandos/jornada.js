@@ -14,9 +14,12 @@ exports.run = async(client, message, args) => {
 
     if(!args[0]) return message.reply(mf["st/rs"].replace('{prefix}', prefix))
 
+    var cheques_criados = db.fetch('cheques.criados')
+    var cheques_dis = db.fetch(`cheques.${message.author.id}`)
+
     async function setar() {
         await db.set(`${message.author.id}.coins`, 1500)
-        await db.set(`${message.author.id}.banco_coins`, 1500)
+        await db.set(`${message.author.id}.banco_coins`, 0)
         await db.set(`${message.author.id}.limite_carteira`, 2000)
         await db.set(`${message.author.id}.nivel`, 1)
         await db.set(`${message.author.id}.xp`, 0)
@@ -29,6 +32,17 @@ exports.run = async(client, message, args) => {
         await db.set(`${message.author.id}.armaduras`, [])
         await db.set(`${message.author.id}.armas`, [])
         await db.set(`${message.author.id}.frags`, 0)
+
+        if(cheques_dis.length >= 1) {
+            for(c of cheques_dis) {
+                await db.delete(`${c}.valor`)
+                await db.delete(`${c}.criador`)
+                cheques_criados.splice(cheques_criados.indexOf(c), 1)
+                await db.set('cheques.criados', cheques_criados)
+            }    
+        }
+
+        await db.set(`cheques.${message.author.id}`, [])
         
         await db.set(`${message.author.id}.up_xp`, 150)
         await db.set(`${message.author.id}.msg_xp`, 1)

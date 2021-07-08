@@ -117,6 +117,7 @@ client.on('message', async message => {
     comando==="moedas"?carregarComando="coins":''
     comando==="maintenance"?carregarComando="manutencao":''
     comando==="inventory"?carregarComando="inventario":''
+    comando==="check"?carregarComando="cheque":''
 
     if(carregarComando) {
       let acmd = require(`./comandos/${carregarComando}.js`)
@@ -130,4 +131,5 @@ client.on('message', async message => {
     }catch(e) {
       console.log(e)
     }
-  })
+
+})

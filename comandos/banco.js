@@ -71,7 +71,7 @@ exports.run = async(client, message, args) => {
         }
         if(isNaN(args[1])) return message.reply(mf["banco_11"])
         if(args[1] <= 0) return message.reply(mf["banco_12"])
-        if(args[1] > coins) return message.reply(mf["banco_13"])
+        if(args[1] > dbv.coins) return message.reply(mf["banco_13"])
 
         dbv.coins -= coins_depositados
         dbv.banco_coins += coins_depositados
@@ -87,7 +87,7 @@ exports.run = async(client, message, args) => {
 
         if(!args[1]) return message.reply(mf["banco_30"].replace('{prefix}', prefix))
         if(args[1] === "max" || args[1] === "maximo" || args[1] === "all") {
-            let saqueMaximo = limite_carteira - dbv.coins
+            let saqueMaximo = dbv.limite_carteira - dbv.coins
             var saqueTotalMaximo;
             saqueMaximo>dbv.banco_coins?saqueTotalMaximo=dbv.banco_coins:saqueMaximo<dbv.banco_coins?saqueTotalMaximo=saqueMaximo:saqueTotalMaximo=saqueMaximo
 

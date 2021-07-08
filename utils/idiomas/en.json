@@ -13,7 +13,6 @@
     "idm_def": "new language set successfully!",
     "set": "set",
     "using": "this language is already in use!",
-    "see_y_frags": "to see your shards, use: `PREFIXforge shards`",
     "y_shards_title": "Your shards",
     "y_shards_desc": "**You have SHARDSQ shards.**",
     "maintenance": "the bot is currently under maintenance, please try again later.",

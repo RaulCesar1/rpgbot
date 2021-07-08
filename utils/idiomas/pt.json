@@ -13,7 +13,6 @@
     "idm_def": "novo idioma definido com sucesso!",
     "set": "definir",
     "using": "este idioma já está em uso!",
-    "see_y_frags": "para ver seus fragmentos, use: `PREFIXforja fragmentos`",
     "y_shards_title": "Seus fragmentos",
     "y_shards_desc": "**Você tem SHARDSQ fragmentos.**",
     "maintenance": "o bot está em manutenção no momento, tente novamente mais tarde.",
@@ -94,5 +93,32 @@
     "nivel_1": "Você é nível {nivel}",
     "nivel_2": "XP atual: **`{xp}`**",
     "nivel_3": "XP para o próximo nível: **`{calc}`**",
-    "nivel_4": "{user.user.username} é nível {nivel_user}"
+    "nivel_4": "{user.user.username} é nível {nivel_user}",
+
+    "forja_1": "Fragmentos de {user.user.username}",
+    "forja_2": "**Ele tem `{frags_user}` fragmentos.**",
+    "forja_3": "**Ele não tem nenhum fragmento.**",
+    "forja_4": "**Ele tem `1` fragmento.**",
+
+    "inv_1": "Seu inventário - Itens equipados",
+    "inv_2": ":crossed_swords: - Suas armas.\n\n:fire: - Suas magias.\n\n:mechanical_arm: - Suas armaduras.\n\n:briefcase: - Todos os seus itens. \n\n:white_check_mark: - Itens equipados.",
+    "inv_3": "Categoria dos emojis:",
+    "inv_4": "**Você não possui nenhuma arma!**",
+    "inv_5": "**Você não possui nenhuma armadura!**",
+    "inv_6": "**Você não possui nenhuma magia!**",
+    "inv_7": "Seu inventário - Armas",
+    "inv_8": "Seu inventário - Armaduras",
+    "inv_9": "Seu inventário - Magias",
+    "inv_10": "**Limite do inventário: `{limite_itens} itens`**",
+    "inv_11": "Seu inventário - Informações",
+    "inv_12": "**Você não possui nenhum item!**",
+    "inv_13": "Seu inventário - Todos os itens",
+    "inv_14": "Arma Equipada:",
+    "inv_15": "Você não equipou nenhuma arma ainda!",
+    "inv_16": "Armadura Equipada:",
+    "inv_17": "Você não equipou nenhuma armadura ainda!",
+    "inv_18": "Magia Equipada:",
+    "inv_19": "Magias Equipadas:",
+    "inv_20": "Você não equipou nenhuma magia ainda!"
 }
+
