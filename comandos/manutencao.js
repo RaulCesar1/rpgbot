@@ -27,7 +27,9 @@ exports.run = async(client, message, args) => {
                     dbv.manutencao===false?db.set('manutencao', true):db.set('manutencao', false)
                     dbv.manutencao = await db.fetch('manutencao')
                     message.delete()
+                    msg.delete()
                     message.reply(dbv.manutencao===true?'Manutenção ativada.':'Manutenção desativada.')
+                    .then(mm => setTimeout(function(){mm.delete()}, 2000))
                 })
             } else {
                 return

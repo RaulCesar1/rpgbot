@@ -7,13 +7,38 @@ const db = require('quick.db')
 
 client.login(token)
 
-client.on('ready', () => {
+var m_recente = []
+
+var times_uID = db.fetch(`times.uID`)
+var times_criados = db.fetch('times.criados')
+
+var cheques_criados = db.fetch('cheques.criados')
+
+var manutencao = db.fetch('manutencao')
+
+if(!cheques_criados || cheques_criados===0 || cheques_criados===null || cheques_criados===undefined) { db.set(`cheques.criados`, [])}
+if(!times_uID || times_uID===null || times_uID===undefined) { db.set(`times.uID`, 0)}
+if(!times_criados || times_criados===0 || times_criados===null || times_criados===undefined) { db.set(`times.criados`, [])}
+
+client.on('ready', () => {  
     console.log("RPG online!")
 })
 
 client.on('message', async message => {
     if(message.author.bot) return;
     if(message.channel.type === "dm") return;
+
+    // Sistema de Cooldown
+
+ /*    if(m_recente.indexOf(message.author.id) === -1) {
+      m_recente.push(message.author.id)
+      setTimeout(function(){m_recente.splice(m_recente.indexOf(message.author.id), 1)}, 2000)
+    } else {
+      message.reply('você está em cooldown, aguarde 2 segundos.')
+      return
+    } */
+
+    // Variáveis do Bot
 
     var prefix = db.fetch(`${message.guild.id}.prefix`)
     var coins = db.fetch(`${message.author.id}.coins`)
@@ -31,10 +56,10 @@ client.on('message', async message => {
     var armas = db.fetch(`${message.author.id}.armas`)
     var jornada = db.fetch(`${message.author.id}.jornada`)
     var idm = db.fetch(`${message.guild.id}.idm`)
-    var manutencao = db.fetch('manutencao')
     var frags = db.fetch(`${message.author.id}.frags`)
     var up_xp = db.fetch(`${message.author.id}.up_xp`)
     var msg_xp = db.fetch(`${message.author.id}.msg_xp`)
+
     if(!idm || idm===false) {await db.set(`${message.guild.id}.idm`, 'en')}
     if(!prefix || prefix===false) {await db.set(`${message.guild.id}.prefix`, 'r!')}
 
@@ -63,8 +88,12 @@ client.on('message', async message => {
       msg_xp: msg_xp
     }
     
+    // Mensagem ao mencionar o bot
+
     if(message.content.startsWith(`<@${botID}>`) || message.content.startsWith(`<@!${botID}>`))
       return message.reply(mf["bot_mention"].replace('{prefix}', prefix))
+
+    // Sistema de XP
 
     if(!message.content.startsWith(prefix)) {
       if(jornada === true) {
@@ -102,6 +131,8 @@ client.on('message', async message => {
       }
       return
     }
+
+    // Command Handler/Tradução de comandos
   
     var comando = message.content.toLowerCase().split(' ')[0];
     comando = comando.slice(prefix.length);

@@ -18,20 +18,27 @@ exports.run = async(client, message, args) => {
     var cheques_dis = db.fetch(`cheques.${message.author.id}`)
 
     async function setar() {
-        await db.set(`${message.author.id}.coins`, 1500)
+        await db.set(`${message.author.id}.coins`, 0)
         await db.set(`${message.author.id}.banco_coins`, 0)
         await db.set(`${message.author.id}.limite_carteira`, 2000)
         await db.set(`${message.author.id}.nivel`, 1)
         await db.set(`${message.author.id}.xp`, 0)
         await db.set(`${message.author.id}.limite_itens`, 25)
         await db.set(`${message.author.id}.inventario_itens`, [])
-        await db.set(`${message.author.id}.arma_equipada`, [])
-        await db.set(`${message.author.id}.armadura_equipada`, [])
-        await db.set(`${message.author.id}.magias_equipadas`, [])
         await db.set(`${message.author.id}.magias`, [])
         await db.set(`${message.author.id}.armaduras`, [])
         await db.set(`${message.author.id}.armas`, [])
+        await db.set(`${message.author.id}.arma_equipada`, {})
+        await db.set(`${message.author.id}.armadura_equipada`, {})
+        await db.set(`${message.author.id}.magias_equipadas`, {})
         await db.set(`${message.author.id}.frags`, 0)
+
+        //time
+        await db.set(`${message.author.id}.time_disponivel`, true)
+
+        //cheques
+
+        cheques_dis===undefined||!cheques_dis||cheques_dis===null||cheques_dis===0?cheques_dis=[]:''
 
         if(cheques_dis.length >= 1) {
             for(c of cheques_dis) {

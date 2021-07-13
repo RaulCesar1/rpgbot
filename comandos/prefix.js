@@ -36,7 +36,7 @@ exports.run = async(client, message, args) => {
 
     if(args[0] === "resetar" || args[0] === "reset") {
         try {
-            await db.set(`${message.guild.id}.prefix`, '!')
+            await db.set(`${message.guild.id}.prefix`, 'r!')
             prefix = await db.fetch(`${message.guild.id}.prefix`)
             await message.reply(mf["prefix_cmd_reset"])
         }catch(e){

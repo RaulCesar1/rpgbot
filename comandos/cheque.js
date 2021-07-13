@@ -58,17 +58,19 @@ exports.run = async(client, message, args, comando) => {
             .addField('Código do cheque:', `\`${criar_cheque()}\`\n\n**Utilize: \`${prefix}cheque usar <código do cheque>\`**`)
             .setColor("BLUE")
 
-            message.channel.send(message.author, embed)
+            message.author.send(embed).catch(() => {message.reply(`não possível enviar o código para o seu DM! Ative as mensagens diretas e use: \`${prefix}cheque disponivel\``); return});
+            message.delete()
+            message.reply('cheque criado com sucesso! Verifique seu DM.')
         } catch(e) {
             console.log(e)
         }
     }
 
     if(args[0] === "usar" || args[0] === "use") {
+        message.delete()
         if(!args[1]) return message.reply(`use: \`${prefix}cheque usar <código do cheque>\``)
 
         if(cheques_criados.indexOf(args[1]) === -1) {
-            message.delete()
             message.reply(`este código não existe! Verifique se digitou corretamente.`)
             return
         } 
@@ -90,11 +92,10 @@ exports.run = async(client, message, args, comando) => {
             db.delete(`${args[1]}.criador`)
 
             if((dbv.coins + valor_cheque) > dbv.limite_carteira) {
-                let resto = (dbv.coins + valor_cheque) - dbv.limite_carteira
-                let para_carteira = (dbv.coins + valor_cheque) - resto
+                let resto = (dbv.coins + valor_cheque) - dbv.limite_carteira 
+                let carteira = (dbv.coins + valor_cheque) - resto                                                    
 
-                dbv.coins += para_carteira
-                db.set(`${message.author.id}.coins`, dbv.coins)
+                db.set(`${message.author.id}.coins`, carteira)
 
                 dbv.banco_coins += resto
                 db.set(`${message.author.id}.banco_coins`, dbv.banco_coins)
@@ -102,11 +103,10 @@ exports.run = async(client, message, args, comando) => {
                 let embed = new MessageEmbed()
                 .setAuthor(`Cheque utilizado com sucesso! (${valor_cheque} coins)`)
                 .setColor("YELLOW")
-                .setDescription(`**\`${para_carteira}\` coins foram adicionados na sua carteira.**\n**\`${resto}\` coins foram adicionados na sua conta do banco.**`)
+                .setDescription(`**\`${valor_cheque-resto}\` coins foram adicionados na sua carteira.**\n**\`${resto}\` coins foram adicionados na sua conta do banco.**`)
                 .setFooter("Sua carteira atingiu o limite de coins!")
     
                 message.channel.send(message.author, embed)
-                message.delete()
             } else {
                 dbv.coins += valor_cheque
                 db.set(`${message.author.id}.coins`, dbv.coins)
@@ -117,7 +117,6 @@ exports.run = async(client, message, args, comando) => {
                 .setDescription(`**\`${valor_cheque}\` coins foram adicionados na sua carteira!**`)
     
                 message.channel.send(message.author, embed)
-                message.delete()
             }
             
         }catch(e){
@@ -129,11 +128,21 @@ exports.run = async(client, message, args, comando) => {
     if(args[0] === "disponiveis" || args[0] === "disponivel" || args[0] === "available") {
         let cheques_disponiveis = db.fetch(`cheques.${message.author.id}`)
 
-        let embed = new MessageEmbed()
-        .setAuthor("Cheques disponíveis")
-        .setDescription(cheques_disponiveis.length===0?'Você não tem nenhum cheque disponível!':cheques_disponiveis)
-        .setColor("RED")
+        if(cheques_disponiveis.length===0) {
+            message.reply('você não tem nenhum cheque disponível!')            
+            return
+        }
 
-        message.channel.send(message.author, embed)
+        try {
+            let embed = new MessageEmbed()
+            .setAuthor("Cheques disponíveis")
+            .setDescription(cheques_disponiveis)
+            .setColor("RED")
+    
+            message.author.send(embed).catch(() => {message.reply(`não possível enviar o código para o seu DM! Ative as mensagens diretas e tente usar o comando novamente.`); return});
+            message.reply('verifique seu DM!')
+        } catch(e){
+            console.log(e)
+        }
     }
 }

@@ -19,10 +19,6 @@ exports.run = async(client, message, args, comando) => {
         .addField("Vida:", `${vida} HP`)
         .setColor("AQUA")   
 
-        atacado===false?message.delete():''
-        atacado===false?me=message.channel.send(message.author, embed):me=me
-
-        atacado===true?me.edit(embed):""
         me.then(msg => {
             msg.react('⚔️')
             msg.react('🔥')
