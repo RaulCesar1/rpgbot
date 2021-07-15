@@ -17,8 +17,11 @@ exports.run = async(client, message, args) => {
     var cheques_criados = db.fetch('cheques.criados')
     var cheques_dis = db.fetch(`cheques.${message.author.id}`)
 
+    var times_criados = db.fetch('times.criados')
+    var time_user = db.fetch(`${message.author.id}.time`)
+
     async function setar() {
-        await db.set(`${message.author.id}.coins`, 0)
+        await db.set(`${message.author.id}.coins`, 2000)
         await db.set(`${message.author.id}.banco_coins`, 0)
         await db.set(`${message.author.id}.limite_carteira`, 2000)
         await db.set(`${message.author.id}.nivel`, 1)
@@ -34,7 +37,9 @@ exports.run = async(client, message, args) => {
         await db.set(`${message.author.id}.frags`, 0)
 
         //time
-        await db.set(`${message.author.id}.time_disponivel`, true)
+        if(times_criados.indexOf(time_user) === -1) {
+            await db.set(`${message.author.id}.time_disponivel`, true)
+        }
 
         //cheques
 
