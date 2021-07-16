@@ -21,8 +21,6 @@ exports.run = async(client, message, args) => {
 
     if(args[0] === "set" || args[0] === "definir") {
 
-        if(!message.member.hasPermission("ADMINISTRATOR")) return message.reply(mf["noperm"])
-
         if(!args[1]) return message.reply(mf["idm_set_noargs1"].replace('PREFIX', prefix))
 
         if(IDMS.indexOf(args[1].toUpperCase()) === -1) return message.reply(mf["un_idm"].replace('$idioma', args[1].toLowerCase().slice(0, 3)).replace('$prefix', prefix))
@@ -31,9 +29,9 @@ exports.run = async(client, message, args) => {
 
         try {
 
-            await db.set(`${message.guild.id}.idm`, args[1].toLowerCase())
+            await db.set(`${message.author.id}.idm`, args[1].toLowerCase())
 
-            dbv.idm = await db.fetch(`${message.guild.id}.idm`)
+            dbv.idm = await db.fetch(`${message.author.id}.idm`)
 
             await message.reply(`${mf["idm_def"]}`)
 

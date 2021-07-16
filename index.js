@@ -41,6 +41,7 @@ client.on('message', async message => {
     // Variáveis do Bot
 
     var prefix = db.fetch(`${message.guild.id}.prefix`)
+
     var coins = db.fetch(`${message.author.id}.coins`)
     var banco_coins =  db.fetch(`${message.author.id}.banco_coins`)
     var limite_carteira = db.fetch(`${message.author.id}.limite_carteira`)
@@ -55,12 +56,13 @@ client.on('message', async message => {
     var armaduras = db.fetch(`${message.author.id}.armaduras`)
     var armas = db.fetch(`${message.author.id}.armas`)
     var jornada = db.fetch(`${message.author.id}.jornada`)
-    var idm = db.fetch(`${message.guild.id}.idm`)
+    var idm = db.fetch(`${message.author.id}.idm`)
     var frags = db.fetch(`${message.author.id}.frags`)
     var up_xp = db.fetch(`${message.author.id}.up_xp`)
     var msg_xp = db.fetch(`${message.author.id}.msg_xp`)
+    var mentions = db.fetch(`${message.author.id}.mentions`)
 
-    if(!idm || idm===false) {await db.set(`${message.guild.id}.idm`, 'en')}
+    if(!idm || idm===false) {await db.set(`${message.author.id}.idm`, 'pt')}
     if(!prefix || prefix===false) {await db.set(`${message.guild.id}.prefix`, 'r!')}
 
     const mf = require(`./utils/idiomas/${idm}.json`)
@@ -85,7 +87,8 @@ client.on('message', async message => {
       frags: frags,
       prefix: prefix,
       up_xp: up_xp,
-      msg_xp: msg_xp
+      msg_xp: msg_xp,
+      mentions: mentions
     }
     
     // Mensagem ao mencionar o bot

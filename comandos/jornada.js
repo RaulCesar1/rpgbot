@@ -35,6 +35,7 @@ exports.run = async(client, message, args) => {
         await db.set(`${message.author.id}.armadura_equipada`, {})
         await db.set(`${message.author.id}.magias_equipadas`, {})
         await db.set(`${message.author.id}.frags`, 0)
+        await db.set(`${message.author.id}.mentions`, true)
 
         //time
         if(times_criados.indexOf(time_user) === -1) {

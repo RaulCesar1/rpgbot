@@ -106,7 +106,7 @@ exports.run = async(client, message, args) => {
         if(args[1] <= 0) return message.reply(mf["banco_12"])
         if(args[1] > dbv.banco_coins) return message.reply(mf["banco_19"])
         let saqueVerificar = coins_sacados + dbv.coins
-        if(saqueVerificar > limite_carteira) return message.reply(mf["banco_20"])
+        if(saqueVerificar > dbv.limite_carteira) return message.reply(mf["banco_20"])
 
         dbv.coins += coins_sacados
         dbv.banco_coins -= coins_sacados

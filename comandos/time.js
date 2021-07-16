@@ -35,15 +35,16 @@ exports.run = async(client, message, args, comando) => {
         let time_bonus = db.fetch(`${time}.bonus`)
         let time_tag = db.fetch(`${time}.tag`)
         let time_criador_id = db.fetch(`${time}.criador_id`)
+        let time_limite_membros = db.fetch(`${time}.limite_membros`)
 
         let painel_inf_embed_p1 = new MessageEmbed()
         .setColor("#00f4ff")
         .setAuthor(`${time} (${time_tag})`)
         .addField(`ID do time:`, time_id, true)
-        .addField(`Quantidade de membros:`, time_membros_quantidade===1?`${time_membros_quantidade} membro`:`${time_membros_quantidade} membros`, true)
+        .addField(`Quantidade de membros:`, time_membros_quantidade===1?`${time_membros_quantidade} membro de ${time_limite_membros}`:`${time_membros_quantidade} membros de ${time_limite_membros}`, true)
         .addField(`Criador do time:`, `${time_criador} (${time_criador_id})`, true)
         .addField(`Bônus do time:`, `\`${prefix}time bonus\``, true)
-        .addField(`Cofre do time:`, time_cofre<=1?`${time_cofre} coin`:`${time_cofre} coins`, true)
+        .addField(`Cofre do time:`, `\`${prefix}time cofre\``, true)
 
         let painel_inf_embed_p2 = new MessageEmbed()
         .setColor("#00f4ff")
@@ -52,21 +53,120 @@ exports.run = async(client, message, args, comando) => {
 
         message.channel.send(message.author, painel_inf_embed_p1)
         .then(msg => {
-            msg.react('⬅️');msg.react('➡️')
+            msg.react('👥')
 
-            let f1 = (r, u) => r.emoji.name === "➡️" && u.id === message.author.id;
+            var qual = true
+
+            let f1 = (r, u) => r.emoji.name === "👥" && u.id === message.author.id;
             let c1 = msg.createReactionCollector(f1, {max: 100})
-            let f2 = (r, u) => r.emoji.name === "⬅️" && u.id === message.author.id;
-            let c2 = msg.createReactionCollector(f2, {max: 100})
 
             c1.on('collect', mm => {
-                msg.reactions.resolve('➡️').users.remove(message.author.id)
-                msg.edit(painel_inf_embed_p2)
+                msg.reactions.resolve('👥').users.remove(message.author.id)
+                qual===true?msg.edit(painel_inf_embed_p2):msg.edit(painel_inf_embed_p1)
+                qual===true?qual=false:qual=true
+            })
+        })
+        return
+    }
+
+    if(args[0] === "melhorar") {
+        let time = db.fetch(`${message.author.id}.time`)
+
+        if(times_criados.indexOf(time) === -1) return message.reply('você não está em um time!')
+
+        let time_tag = db.fetch(`${time}.tag`)
+        let time_criador_id = db.fetch(`${time}.criador_id`)
+        let time_desconto_armas = db.fetch(`${time}.desconto_armas`)
+        let time_desconto_armaduras = db.fetch(`${time}.desconto_armaduras`)
+        let time_desconto_magias = db.fetch(`${time}.desconto_magias`)
+        let time_bonus_xp = db.fetch(`${time}.bonus_xp`)
+        let time_bonus_coins = db.fetch(`${time}.bonus_coins`)
+        let time_limite_membros = db.fetch(`${time}.limite_membros`)
+        let time_cofre = db.fetch(`${time}.cofre`)
+
+        let time_desconto_armas_p = db.fetch(`${time}.desconto_armas_p`)
+        let time_desconto_armaduras_p = db.fetch(`${time}.desconto_armaduras_p`)
+        let time_desconto_magias_p = db.fetch(`${time}.desconto_magias_p`)
+        let time_bonus_xp_p = db.fetch(`${time}.bonus_xp_p`)
+        let time_bonus_coins_p = db.fetch(`${time}.bonus_coins_p`)
+        let time_limite_membros_p = db.fetch(`${time}.limite_membros_p`)
+
+        if(message.author.id !== time_criador_id) return message.reply(`você precisa ser o líder do time para utilizar este comando!`)
+
+        let embed_melhorias = new MessageEmbed()
+        .setAuthor(`${time_tag} - Melhorias`)
+        .setColor("#00f4ff")
+        .addField(':one: - Desconto nas armas', `\`${time_desconto_armas}% ➠ ${time_desconto_armas + 0.2}%\` ${time_desconto_armas_p} moedas`)
+        .addField(':two: - Desconto nas armaduras', `\`${time_desconto_armaduras}% ➠ ${time_desconto_armaduras + 0.2}%\` ${time_desconto_armaduras_p} moedas`)
+        .addField(':three: - Desconto nas magias', `\`${time_desconto_magias}% ➠ ${time_desconto_magias + 0.2}%\` ${time_desconto_magias_p} moedas`)
+        .addField(':four: - Bônus de XP', `\`${time_bonus_xp}% ➠ ${time_bonus_xp + 0.1}%\` ${time_bonus_xp_p} moedas`)
+        .addField(':five: - Bônus de moedas', `\`${time_bonus_coins}% ➠ ${time_bonus_coins + 0.1}%\` ${time_bonus_coins_p} moedas`)
+        .addField(':six: - Limite de membros', `\`${time_limite_membros} membros ➠ ${time_limite_membros + 1} membros\` ${time_limite_membros_p} moedas`)
+        .setFooter('Reaja com os emojis abaixo para melhorar')
+
+        function melhorar_bonus(bonus, mult, price, adc, b_ui) {
+            if(price > time_cofre) return message.reply(`seu time não tem moedas suficiente no cofre!\nUtilize \`${prefix}time cofre\``).then(msg => setTimeout(() =>msg.delete(), 4000))
+
+            let bonus_v = db.fetch(`${time}.${bonus}`)
+            let price_v = db.fetch(`${time}.${bonus}_p`)
+
+            bonus_v = bonus_v + mult
+            price_v = price_v + adc
+            time_cofre = time_cofre - price
+
+            db.set(`${time}.${bonus}`, bonus_v)
+            db.set(`${time}.${bonus}_p`, price_v)
+            db.set(`${time}.cofre`, time_cofre)
+            
+            bonus==='limite_membros'?message.reply(`transação realizada com sucesso! **\`${b_ui} ➠ ${bonus_v} membros\`**`):message.reply(`transação realizada com sucesso! **\`${b_ui} ➠ ${bonus_v}%\`**`)
+        }
+
+        message.delete()
+        message.channel.send(message.author, embed_melhorias)
+        .then(msg => {
+            msg.react('1️⃣'); msg.react('2️⃣'); msg.react('3️⃣'); msg.react('4️⃣'); msg.react('5️⃣'); msg.react('6️⃣')
+            
+            let f1 = (r, u) => r.emoji.name === "1️⃣" && u.id === message.author.id;
+            let c1 = msg.createReactionCollector(f1, {max: 1})
+            let f2 = (r, u) => r.emoji.name === "2️⃣" && u.id === message.author.id;
+            let c2 = msg.createReactionCollector(f2, {max: 1})
+            let f3 = (r, u) => r.emoji.name === "3️⃣" && u.id === message.author.id;
+            let c3 = msg.createReactionCollector(f3, {max: 1})
+            let f4 = (r, u) => r.emoji.name === "4️⃣" && u.id === message.author.id;
+            let c4 = msg.createReactionCollector(f4, {max: 1})  
+            let f5 = (r, u) => r.emoji.name === "5️⃣" && u.id === message.author.id;
+            let c5 = msg.createReactionCollector(f5, {max: 1})     
+            let f6 = (r, u) => r.emoji.name === "6️⃣" && u.id === message.author.id;
+            let c6 = msg.createReactionCollector(f6, {max: 1})
+
+            c1.on('collect', mm => {
+                msg.delete()
+                melhorar_bonus('desconto_armas', 0.2, time_desconto_armas_p, 200, 'Desconto nas armas')
             })
 
             c2.on('collect', mm => {
-                msg.reactions.resolve('⬅️').users.remove(message.author.id)
-                msg.edit(painel_inf_embed_p1)
+                msg.delete()
+                melhorar_bonus('desconto_armaduras', 0.2, time_desconto_armaduras_p, 200, 'Desconto nas armaduras')
+            })
+
+            c3.on('collect', mm => {
+                msg.delete()
+                melhorar_bonus('desconto_magias', 0.2, time_desconto_magias_p, 200, 'Desconto nas magias')
+            })
+
+            c4.on('collect', mm => {
+                msg.delete()
+                melhorar_bonus('bonus_xp', 0.1, time_bonus_xp_p, 300, 'Bônus de XP')
+            })
+
+            c5.on('collect', mm => {
+                msg.delete()
+                melhorar_bonus('bonus_coins', 0.1, time_bonus_coins_p, 300, 'Bônus de coins')
+            })
+
+            c6.on('collect', mm => {
+                msg.delete()
+                melhorar_bonus('limite_membros', 1, time_limite_membros_p, 0, 'Limite de membros')
             })
         })
         return
@@ -205,11 +305,11 @@ exports.run = async(client, message, args, comando) => {
         let embed_bonus = new MessageEmbed()
         .setAuthor('Bônus do time')
         .setColor("#00f4ff")
-        .addField(`Desconto nas armas:`, `${time_desconto_armas}%`, true)
-        .addField(`Desconto nas armaduras:`, `${time_desconto_armaduras}%`, true)
-        .addField(`Desconto nas magias:`, `${time_desconto_magias}%`, true)
-        .addField(`Bônus de XP:`, `${time_bonus_xp}%`, true)
-        .addField(`Bônus de coins`, `${time_bonus_coins}%`, true)
+        .addField(`Desconto nas armas:`, `**\`${time_desconto_armas}%\`**`, true)
+        .addField(`Desconto nas armaduras:`, `**\`${time_desconto_armaduras}%\`**`, true)
+        .addField(`Desconto nas magias:`, `**\`${time_desconto_magias}%\`**`, true)
+        .addField(`Bônus de XP:`, `**\`${time_bonus_xp}%\`**`, true)
+        .addField(`Bônus de moedas`, `**\`${time_bonus_coins}%\`**`, true)
 
         message.channel.send(message.author, embed_bonus)
     }
@@ -228,7 +328,8 @@ exports.run = async(client, message, args, comando) => {
             `${prefix}time melhorar\n`+
             `${prefix}time convidar\n`+
             `${prefix}time convites\n`+
-            `${prefix}time cofre`
+            `${prefix}time cofre\n`+
+            `${prefix}time entrar`
         )
 
         message.channel.send(message.author, embed)
@@ -240,9 +341,9 @@ exports.run = async(client, message, args, comando) => {
 
         if(times_criados.indexOf(time) === -1) return message.reply('você não está em um time!')
 
-        if(!args[1]) return message.reply(`use: \`${prefix}time depositar <quantidade-de-coins>\``)
+        if(!args[1]) return message.reply(`use: \`${prefix}time depositar <quantidade-de-moedas>\``)
         if(isNaN(args[1])) return message.reply(`o valor inserido precisa ser um número!`)
-        if(args[1] > dbv.coins) return message.reply(`você não tem coins suficiente para depositar!`)
+        if(args[1] > dbv.coins) return message.reply(`você não tem moedas suficiente para depositar!`)
         if(args[1] <= 0) return message.reply('o valor inserido precisa ser no mínimo `1`!')
 
         let time_cofre = db.fetch(`${time}.cofre`)
@@ -269,13 +370,49 @@ exports.run = async(client, message, args, comando) => {
         if(times_criados.indexOf(time) === -1) return message.reply('você não está em um time!')
 
         let time_cofre = db.fetch(`${time}.cofre`)
+        let time_desconto_armas = db.fetch(`${time}.desconto_armas`)
+        let time_desconto_armaduras = db.fetch(`${time}.desconto_armaduras`)
+        let time_desconto_magias = db.fetch(`${time}.desconto_magias`)
+        let time_bonus_xp = db.fetch(`${time}.bonus_xp`)
+        let time_bonus_coins = db.fetch(`${time}.bonus_coins`)
+        let time_criador_id = db.fetch(`${time}.criador_id`)
 
         let embed_cofre = new MessageEmbed()
         .setColor("#00f4ff")
         .setAuthor("Cofre do time")
-        .setDescription(time_cofre===0?'Seu time não possui nenhum coin depositado no cofre!':`Seu time possui \`${time_cofre} coins\` depositados no cofre!`)
+        .setDescription(time_cofre===0?'**Seu time não possui nenhuma moeda depositada no cofre!**':`**Seu time possui \`${time_cofre} moedas\` depositadas no cofre!**`)
 
         message.channel.send(message.author, embed_cofre)
+        .then(msg => {
+            if(message.author.id !== time_criador_id) return;
+
+            msg.react('💸')
+
+            let f1 = (r, u) => r.emoji.name === "💸" && u.id === message.author.id;
+            let c1 = msg.createReactionCollector(f1, {max: 1})
+
+            function sacar_cofre_time() {
+                let a, b, c, d, e = false
+
+                time_desconto_armas===50?a=true:''
+                time_desconto_armaduras===50?b=true:''
+                time_desconto_magias===50?c=true:''
+                time_bonus_xp===50?d=true:''
+                time_bonus_coins===50?e=true:''
+
+                if(a === false || b === false || c === false || d === false || e === false) return message.reply(`você ainda não pode sacar as moedas do cofre do time!\nEvolua os bônus do time ao máximo para sacar.`).then(mam => setTimeout(() => mam.delete(), 4000))
+                if(a === true && b === true && c === true && d === true && e === true) {
+                    dbv.coins += time_cofre
+                    db.set(`${message.author.id}.coins`, dbv.coins)
+                    message.reply(`seu time tem todos os requisitos para sacar moedas, **\`${time_cofre} moedas\`** foram adicionadas na sua carteira.`)
+                }
+            }
+
+            c1.on('collect', mm => {
+                msg.reactions.removeAll()
+                sacar_cofre_time()
+            })
+        })
         return
     }
 
@@ -359,14 +496,16 @@ exports.run = async(client, message, args, comando) => {
 
     if(args[0] === "criar") {
         if(time_disponivel === false) return message.reply("você já está em um time! Saia dele antes de criar outro.")
+        if(dbv.coins < 500) return message.reply('você precisa de 500 moedas para criar um time!')
 
         function criar_time(nome, tag) {
             let embed_criado_sucesso = new MessageEmbed()
             .setAuthor('Time criado com sucesso!')
-            .addField('Nome do time:', nome)
-            .addField('TAG do time:', tag)
+            .addField('Nome do time:', `\`${nome}\``, true)
+            .addField('TAG do time:', `\`${tag}\``, true)
             .setColor('YELLOW')
             .setDescription(`Utilize \`${prefix}time\` e veja o painel de informações do seu time!`)
+            .setFooter('500 moedas foram debitadas de sua carteira.')
             
             times_uID += 1
 
@@ -389,6 +528,14 @@ exports.run = async(client, message, args, comando) => {
             db.set(`${nome}.bonus_xp`, 0.1)
             db.set(`${nome}.bonus_coins`, 0.1)
 
+            db.set(`${nome}.desconto_armas_p`, 200)
+            db.set(`${nome}.desconto_armaduras_p`, 200)
+            db.set(`${nome}.desconto_magias_p`, 200)
+            db.set(`${nome}.bonus_xp_p`, 400)
+            db.set(`${nome}.bonus_coins_p`, 400)
+
+            db.set(`${nome}.limite_membros_p`, 150)
+
             //
 
             db.push('times.tags', tag)
@@ -397,6 +544,9 @@ exports.run = async(client, message, args, comando) => {
 
             db.set(`${message.author.id}.time_disponivel`, false)
             db.set(`${message.author.id}.time`, nome)
+
+            dbv.coins -= 500
+            db.set(`${message.author.id}.coins`, dbv.coins)
 
             message.channel.send(message.author, embed_criado_sucesso)
         }
@@ -454,7 +604,6 @@ exports.run = async(client, message, args, comando) => {
                     return message.reply('esta TAG já está em uso.')
 
                     criar_time(nome_time.first().content, tag_time.first().content)
-                    
                 })
             })
               
